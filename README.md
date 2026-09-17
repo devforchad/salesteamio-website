@@ -1,6 +1,6 @@
-# Sales Team IO website (private draft)
+# Sales Team IO website
 
-Static one-page marketing site for Sales Team IO, built with Vite, React, and TypeScript. It is intentionally a private draft and has not been published.
+Static one-page marketing site for Sales Team IO, built with Vite, React, and TypeScript.
 
 ## Run locally
 
@@ -15,11 +15,11 @@ Vite will print the local URL. Use `npm run build` to run the TypeScript build a
 
 The form uses browser validation, then opens the visitor's default email application with a prefilled message addressed to `chadpitton@gmail.com`. It does not collect or send data to a backend.
 
-## Publishing after approval
+## Deployment
 
-This site can be hosted as static files on a low-maintenance platform such as Cloudflare Pages, Netlify, Vercel, or a conventional static host. Build it with `npm run build`, then deploy the contents of `dist/`.
+The site is deployed to GitHub Pages from `main` after the automated checks pass. The production build is generated with `npm run build` and uploaded from `dist/`.
 
-For `salesteamio.com`, point the apex/root domain and `www` records according to the chosen host's DNS instructions. Set the canonical domain to `https://salesteamio.com`, redirect `www` to the chosen canonical host, and enable HTTPS. Do not change GoDaddy DNS until the deployment destination has been chosen and approved.
+The canonical production URL is `https://salesteamio.com`. GitHub Pages handles the `www` redirect and HTTPS after the custom domain and DNS records have been validated.
 
 ## Design notes
 
