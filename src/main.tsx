@@ -20,6 +20,74 @@ const projects = [
   ['Attribution to calendar', 'Carried form responses and tracking context into enriched calendar events so sales teams start every call informed.'],
 ]
 
+const systemStages = [
+  { label: 'INPUT', title: 'New lead', detail: 'Form · call · referral', icon: '01' },
+  { label: 'SYSTEM OF RECORD', title: 'CRM', detail: 'Identity · owner · history', icon: '02' },
+  { label: 'ORCHESTRATION', title: 'AI workflow', detail: 'Qualify · route · follow up', icon: '03' },
+  { label: 'HUMAN ACTION', title: 'Sales rep', detail: 'Full context · next step', icon: '04' },
+]
+
+function SystemVisual() {
+  return <div className="system-visual" role="img" aria-label="A connected sales system moves every new lead into the CRM, through an AI workflow, and to a sales rep with context">
+    <div className="visual-glow"></div>
+    <div className="visual-frame">
+      <div className="visual-header"><span><i></i> LIVE OPERATING FLOW</span><small>4 systems connected</small></div>
+      <ol className="system-flow">
+        {systemStages.map((stage, index) => <li key={stage.title}>
+          <div className="stage-index">{stage.icon}</div>
+          <div className="stage-copy"><small>{stage.label}</small><b>{stage.title}</b><span>{stage.detail}</span></div>
+          <span className="stage-status" aria-hidden="true">{index === systemStages.length - 1 ? 'READY' : 'SYNCED'}</span>
+          {index < systemStages.length - 1 && <span className="flow-link" aria-hidden="true"><i></i></span>}
+        </li>)}
+      </ol>
+      <div className="visual-footer"><span><i></i> No dropped handoffs</span><span>One traceable record</span></div>
+    </div>
+  </div>
+}
+
+function ProjectVisual({ index }: { index: number }) {
+  if (index === 0) return <div className="project-art project-reengagement" role="img" aria-label="A stalled lead is reviewed by AI, approved by a person, and returned to an active conversation">
+    <span className="art-number">01 · RE-ENGAGEMENT LOOP</span>
+    <div className="mini-flow reengagement-flow">
+      <div><small>14d quiet</small><b>Stalled lead</b></div><i></i><div className="accent"><small>signal found</small><b>AI review</b></div><i></i><div><small>approved</small><b>Human check</b></div><i></i><div className="success"><small>reply</small><b>Conversation</b></div>
+    </div>
+  </div>
+
+  if (index === 1) return <div className="project-art project-lending" role="img" aria-label="A lending application moves through intake, CRM, documents, review, and submission with one tracked status">
+    <span className="art-number">02 · TRACEABLE APPLICATION</span>
+    <div className="lending-track"><span>INTAKE</span><span>CRM</span><span>DOCS</span><span>REVIEW</span><span>SUBMIT</span></div>
+    <div className="lending-record"><span>APPLICATION #2048</span><b>Review package complete</b><small><i></i> 8 documents verified · owner assigned</small></div>
+  </div>
+
+  if (index === 2) return <div className="project-art project-routing" role="img" aria-label="New leads enter one assignment engine and are routed to the right sales queue and representative">
+    <span className="art-number">03 · OWNERSHIP ENGINE</span>
+    <div className="route-input"><small>NEW LEADS</small><b>24</b><span>unassigned</span></div>
+    <div className="route-hub"><small>RULES</small><b>Territory + capacity</b></div>
+    <div className="route-output"><span><i>A</i> East queue <b>8</b></span><span><i>B</i> West queue <b>9</b></span><span><i>C</i> Follow-up <b>7</b></span></div>
+    <svg viewBox="0 0 560 180" aria-hidden="true"><path d="M130 92H225"/><path d="M346 92H382V44H418"/><path d="M346 92H418"/><path d="M346 92H382V140H418"/></svg>
+  </div>
+
+  return <div className="project-art project-attribution" role="img" aria-label="Form and campaign attribution data are attached to the calendar event so the rep enters the call informed">
+    <span className="art-number">04 · CONTEXT TO CALENDAR</span>
+    <div className="source-card"><small>FORM + UTM</small><b>Roof replacement</b><span>Google · Campaign 04</span></div>
+    <div className="transfer-line" aria-hidden="true"><i></i></div>
+    <div className="calendar-card"><header><span>SEP</span><b>24</b></header><div><small>DISCOVERY CALL</small><b>Jordan Miller</b><span>Need, source, answers attached</span></div></div>
+  </div>
+}
+
+function OperatorVisual() {
+  return <div className="about-mark" role="img" aria-label="One accountable operator owns discovery, architecture, implementation, quality assurance, and handoff">
+    <div className="operator-label"><span></span> HANDS-ON DELIVERY</div>
+    <div className="operator-core"><small>ONE ACCOUNTABLE</small><b>Operator</b><span>Discovery through handoff</span></div>
+    <ol className="operator-stages">
+      <li><b>01</b><span>Discovery</span><i>Mapped</i></li>
+      <li><b>02</b><span>Architecture</span><i>Designed</i></li>
+      <li><b>03</b><span>Implementation</span><i>Built</i></li>
+      <li><b>04</b><span>QA + handoff</span><i>Verified</i></li>
+    </ol>
+  </div>
+}
+
 function Icon({ name }: { name: IconName }) {
   const paths: Record<IconName, string> = {
     grid: 'M3 3h7v7H3V3Zm11 0h7v7h-7V3ZM3 14h7v7H3v-7Zm11 0h7v7h-7v-7Z',
@@ -67,22 +135,14 @@ function App() {
           <div className="actions"><a className="button primary" href="#contact">Book a systems audit <span>↗</span></a><a className="button secondary" href="#services">See what we build <span>↓</span></a></div>
           <p className="microcopy"><span className="dot"></span> Built for sales-driven teams that are done with duct tape.</p>
         </div>
-        <div className="system-visual" aria-label="Illustration of an integrated sales operations workflow">
-          <div className="visual-glow"></div><div className="orbit orbit-one"></div><div className="orbit orbit-two"></div>
-          <div className="node node-lead"><small>INPUT</small><b>New lead</b><span>Form · call · referral</span></div>
-          <div className="node node-crm"><small>SYSTEM OF RECORD</small><b>CRM</b><span>Ownership · history</span></div>
-          <div className="node node-ai"><small>ASSIST</small><b>AI workflow</b><span>Qualify · route · follow up</span></div>
-          <div className="node node-rep"><small>ACTION</small><b>Sales rep</b><span>Context when it counts</span></div>
-          <svg className="connections" viewBox="0 0 600 510" aria-hidden="true"><path d="M125 164 C 198 164, 210 170, 265 204"/><path d="M410 230 C 452 250, 457 297, 443 327"/><path d="M276 346 C 222 366, 180 360, 153 325"/><circle cx="265" cy="204" r="4"/><circle cx="443" cy="327" r="4"/></svg>
-          <div className="visual-label"><span></span> OPERATIONAL FLOW</div>
-        </div>
+        <SystemVisual />
       </section>
       <section className="tech-band" aria-label="Technology experience"><p>Tools, platforms &amp; systems experience</p><div className="tech-list" tabIndex={0} aria-label="Scrollable technology list"><span>Close</span><span>n8n</span><span>Zapier</span><span>Google Workspace</span><span>Kixie</span><span>PandaDoc</span><span>Typeform</span><span>Calendly</span><span>Stripe</span><span>Airtable</span><span>OpenClaw</span><span>APIs / Webhooks</span></div></section>
       <section className="section services" id="services"><div className="section-heading"><p className="eyebrow"><span></span> CAPABILITIES</p><h2>Less busywork.<br/><em>More control.</em></h2><p>Every engagement is built around the points where leads, data, and people routinely lose momentum.</p></div><div className="service-grid">{services.map(service => <article className="service-card" key={service.number}><div className="card-top"><span className="icon"><Icon name={service.icon}/></span><small>{service.number}</small></div><h3>{service.title}</h3><p>{service.text}</p><a href="#contact" aria-label={`Discuss ${service.title}`}>Let’s discuss <span>↗</span></a></article>)}</div></section>
-      <section className="section approach" id="approach"><div className="approach-intro"><p className="eyebrow"><span></span> HOW IT WORKS</p><h2>From a tangle of tools to a <em>working system.</em></h2><p>We start with the actual operation—not a generic template—then make the right work visible, repeatable, and easier to improve.</p></div><ol className="process"><li><b>01</b><div><h3>Map the reality</h3><p>Find the handoffs, exceptions, and friction your team lives with every day.</p></div></li><li><b>02</b><div><h3>Design the operating model</h3><p>Define the data, logic, ownership, and human checkpoints that make it reliable.</p></div></li><li><b>03</b><div><h3>Build &amp; test</h3><p>Implement the workflow, validate edge cases, and make the system understandable.</p></div></li><li><b>04</b><div><h3>Hand off with confidence</h3><p>Document, train, QA, and give your team a system they can operate without guessing.</p></div></li></ol></section>
+      <section className="section approach" id="approach"><div className="approach-intro"><p className="eyebrow"><span></span> HOW IT WORKS</p><h2>From a tangle of tools to a <em>working system.</em></h2><p>We start with the actual operation—not a generic template—then make the right work visible, repeatable, and easier to improve.</p></div><ol className="process" aria-label="Four connected delivery phases"><li><b>01</b><div><small>DISCOVER</small><h3>Map the reality</h3><p>Find the handoffs, exceptions, and friction your team lives with every day.</p></div><span>Process map</span></li><li><b>02</b><div><small>DESIGN</small><h3>Design the operating model</h3><p>Define the data, logic, ownership, and human checkpoints that make it reliable.</p></div><span>System blueprint</span></li><li><b>03</b><div><small>IMPLEMENT</small><h3>Build &amp; test</h3><p>Implement the workflow, validate edge cases, and make the system understandable.</p></div><span>Verified workflow</span></li><li><b>04</b><div><small>ENABLE</small><h3>Hand off with confidence</h3><p>Document, train, QA, and give your team a system they can operate without guessing.</p></div><span>Operating playbook</span></li></ol></section>
       <section className="outcomes"><div><p className="eyebrow"><span></span> WHAT CHANGES</p><h2>Make the next right action <em>obvious.</em></h2></div><ul><li><span>01</span><p>Leads are routed, owned, and followed up without relying on someone to remember.</p></li><li><span>02</span><p>Reps have the context they need, where they need it, when a conversation starts.</p></li><li><span>03</span><p>Leaders can see the pipeline and trust what the numbers are actually telling them.</p></li><li><span>04</span><p>Your team spends less time repairing processes and more time moving opportunities.</p></li></ul></section>
-      <section className="section projects" id="projects"><div className="section-heading"><p className="eyebrow"><span></span> SELECTED SYSTEMS</p><h2>Built around the work<br/>that actually happens.</h2><p>Examples of operational problems solved across sales-driven teams. Details are intentionally kept public-safe.</p></div><div className="project-grid">{projects.map(([title, text], i) => <article className="project-card" key={title}><div className={`project-art art-${i + 1}`}><span>{String(i + 1).padStart(2, '0')}</span><i></i><i></i><i></i></div><div><p>OPERATIONS SYSTEM</p><h3>{title}</h3><p>{text}</p></div></article>)}</div></section>
-      <section className="section about" id="about"><div className="about-mark"><div className="monogram">ST<span>IO</span></div><p>Reliable systems are a<br/>competitive advantage.</p></div><div className="about-copy"><p className="eyebrow"><span></span> THE OPERATOR</p><h2>Built by someone who understands the <em>work behind the work.</em></h2><p>Sales Team IO is led by Chad Pitton, a revenue operations and automation consultant working hands-on from discovery through workflow mapping, implementation, testing, documentation, and user handoff.</p><p>His experience spans lending, home services, online education, and remote sales teams—where disconnected tools and unclear process quickly become expensive.</p><a className="text-link" href="https://linkedin.com/in/chadpitton" target="_blank" rel="noreferrer">Connect on LinkedIn <span>↗</span></a></div></section>
+      <section className="section projects" id="projects"><div className="section-heading"><p className="eyebrow"><span></span> SELECTED SYSTEMS</p><h2>Built around the work<br/>that actually happens.</h2><p>Examples of operational problems solved across sales-driven teams. Details are intentionally kept public-safe.</p></div><div className="project-grid">{projects.map(([title, text], i) => <article className="project-card" key={title}><ProjectVisual index={i}/><div><p>OPERATIONS SYSTEM</p><h3>{title}</h3><p>{text}</p></div></article>)}</div></section>
+      <section className="section about" id="about"><OperatorVisual/><div className="about-copy"><p className="eyebrow"><span></span> THE OPERATOR</p><h2>Built by someone who understands the <em>work behind the work.</em></h2><p>Sales Team IO is led by Chad Pitton, a revenue operations and automation consultant working hands-on from discovery through workflow mapping, implementation, testing, documentation, and user handoff.</p><p>His experience spans lending, home services, online education, and remote sales teams—where disconnected tools and unclear process quickly become expensive.</p><a className="text-link" href="https://linkedin.com/in/chadpitton" target="_blank" rel="noreferrer">Connect on LinkedIn <span>↗</span></a></div></section>
       <section className="contact" id="contact"><div className="contact-heading"><p className="eyebrow"><span></span> START HERE</p><h2>Let’s make your sales operation <em>easier to run.</em></h2><p>Tell us what’s breaking down, getting missed, or taking too much manual effort. We’ll start with the system underneath it.</p></div><form onSubmit={submitForm}><label>Name<input name="name" required autoComplete="name" /></label><label>Work email<input name="email" type="email" required autoComplete="email" /></label><label>Company <span>(optional)</span><input name="company" autoComplete="organization" /></label><label>What needs attention?<textarea name="message" required rows={5} placeholder="A few lines about your sales process, tools, or bottleneck."></textarea></label><button className="button primary" type="submit">Request a systems audit <span>↗</span></button><p className="form-note">No backend here—submitting opens a prepared email to Sales Team IO.</p><p className="form-status" aria-live="polite">{formStatus}</p></form></section>
     </main>
     <footer><a className="brand" href="#top" aria-label="Back to top"><img src="/assets/salesteamio-logo.png" alt="" /><span>SALES TEAM <b>IO</b></span></a><p>CRM · Automation · AI Enablement · Revenue Operations</p><div><a href="https://linkedin.com/in/chadpitton" target="_blank" rel="noreferrer">LinkedIn</a><a href="mailto:chadpitton@gmail.com">Email</a></div><small>© {new Date().getFullYear()} Sales Team.io LLC. All rights reserved.</small></footer>
