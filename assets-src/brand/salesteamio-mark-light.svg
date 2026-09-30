@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Sales Team IO">
+  <title>Sales Team IO</title>
+  <!--
+    True-vector rebuild of the Sales Team IO mark.
+    Geometry measured off the 1024px raster (icon centre 512,388) and scaled
+    by 0.918 into this 512 viewBox:
+      diagonal extent   257 -> 236
+      lobe centre       216 -> 198   (x/y 140 on each diagonal)
+      lobe radius        41 -> 37.6
+      arm thickness      20 -> 18.4
+      hub waist half     45 -> 41.3
+      accent distance   153 -> 140
+      accent radius      38 -> 35
+    #f3f8fb drives the structural mark so it recolours per context;
+    the accent nodes keep the brand blue.
+  -->
+  <g transform="translate(256 256)">
+    <!-- Diagonal arms: hub corner -> lobe centre -->
+    <g stroke="#f3f8fb" stroke-width="20" stroke-linecap="round" fill="none">
+      <path d="M-52 -52 L-140 -140"/>
+      <path d="M52 -52 L140 -140"/>
+      <path d="M-52 52 L-140 140"/>
+      <path d="M52 52 L140 140"/>
+    </g>
+    <!-- Lobe terminals -->
+    <g fill="#f3f8fb">
+      <circle cx="-140" cy="-140" r="37.6"/>
+      <circle cx="140" cy="-140" r="37.6"/>
+      <circle cx="-140" cy="140" r="37.6"/>
+      <circle cx="140" cy="140" r="37.6"/>
+    </g>
+    <!-- Central hub: concave-sided square, waist half-width 41.3 -->
+    <path fill="#f3f8fb" d="
+      M-58 -58
+      Q0 -24.6 58 -58
+      Q24.6 0 58 58
+      Q0 24.6 -58 58
+      Q-24.6 0 -58 -58
+      Z"/>
+    <!-- Accent nodes on the cardinal axes -->
+    <g fill="#35adf2">
+      <circle cx="0" cy="-140" r="35"/>
+      <circle cx="0" cy="140" r="35"/>
+      <circle cx="-140" cy="0" r="35"/>
+      <circle cx="140" cy="0" r="35"/>
+    </g>
+  </g>
+</svg>

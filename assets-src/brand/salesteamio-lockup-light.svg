@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 300" width="1200" height="300" role="img" aria-label="Sales Team IO">
+  <title>Sales Team IO</title>
+  <!--
+    Horizontal lockup: mark + wordmark.
+    Mark geometry identical to logo-mark.svg, scaled to 220px and set on a
+    240px optical square at the left. Wordmark is set in Inter-style weights;
+    text is converted at render time by the asset script, so this master stays
+    editable. #f3f8fb drives mark + wordmark; accent nodes and "IO" keep
+    the brand blue.
+  -->
+  <g transform="translate(150 150) scale(0.43)">
+    <g stroke="#f3f8fb" stroke-width="20" stroke-linecap="round" fill="none">
+      <path d="M-52 -52 L-140 -140"/><path d="M52 -52 L140 -140"/>
+      <path d="M-52 52 L-140 140"/><path d="M52 52 L140 140"/>
+    </g>
+    <g fill="#f3f8fb">
+      <circle cx="-140" cy="-140" r="37.6"/><circle cx="140" cy="-140" r="37.6"/>
+      <circle cx="-140" cy="140" r="37.6"/><circle cx="140" cy="140" r="37.6"/>
+    </g>
+    <path fill="#f3f8fb" d="M-58 -58 Q0 -24.6 58 -58 Q24.6 0 58 58 Q0 24.6 -58 58 Q-24.6 0 -58 -58 Z"/>
+    <g fill="#35adf2">
+      <circle cx="0" cy="-140" r="35"/><circle cx="0" cy="140" r="35"/>
+      <circle cx="-140" cy="0" r="35"/><circle cx="140" cy="0" r="35"/>
+    </g>
+  </g>
+  <text x="290" y="150" dominant-baseline="central"
+        font-family="Inter, 'Helvetica Neue', Arial, sans-serif"
+        font-size="104" font-weight="800" letter-spacing="-2"
+        fill="#f3f8fb">SALES TEAM <tspan fill="#35adf2">IO</tspan></text>
+</svg>
