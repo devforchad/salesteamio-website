@@ -9,4 +9,4 @@ playwright-report
 .env
 .env.local
 .env.*.local
-dist-fallback
+dist-override

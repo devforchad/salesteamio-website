@@ -39,11 +39,11 @@ async function fillContact(page: import('@playwright/test').Page) {
   await page.locator('[name="message"]').fill('Our handoffs need attention.')
 }
 
-test('successful submission sends Web3Forms JSON and replaces the form', async ({ page }) => {
+test('successful submission posts to the n8n endpoint and replaces the form', async ({ page }) => {
   let requests = 0
-  await page.route('https://api.web3forms.com/submit', async route => {
+  await page.route('https://n8n.salesteamio.com/webhook/website-contact', async route => {
     requests++
-    expect(route.request().postDataJSON()).toMatchObject({ access_key: 'test-placeholder', email: 'visitor@example.org', name: 'Test Visitor', message: 'Our handoffs need attention.' })
+    expect(route.request().postDataJSON()).toMatchObject({ email: 'visitor@example.org', name: 'Test Visitor', message: 'Our handoffs need attention.' })
     await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ success: true, message: 'Sent' }), headers: { 'access-control-allow-origin': '*' } })
   })
   await fillContact(page)
@@ -55,7 +55,7 @@ test('successful submission sends Web3Forms JSON and replaces the form', async (
 })
 
 test('failed submission retains the form and exposes email fallback', async ({ page }) => {
-  await page.route('https://api.web3forms.com/submit', route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ success: false, message: 'Rejected' }), headers: { 'access-control-allow-origin': '*' } }))
+  await page.route('https://n8n.salesteamio.com/webhook/website-contact', route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ success: false, message: 'Rejected' }), headers: { 'access-control-allow-origin': '*' } }))
   await fillContact(page)
   await page.getByRole('button', { name: 'Request a systems audit' }).click()
   await expect(page.getByRole('alert')).toContainText('wasn’t sent')
@@ -68,7 +68,7 @@ test('submitting prevents double submit', async ({ page }) => {
   let requests = 0
   let release!: () => void
   const pending = new Promise<void>(resolve => { release = resolve })
-  await page.route('https://api.web3forms.com/submit', async route => {
+  await page.route('https://n8n.salesteamio.com/webhook/website-contact', async route => {
     requests++
     await pending
     await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ success: true }), headers: { 'access-control-allow-origin': '*' } })
@@ -86,7 +86,7 @@ test('submitting prevents double submit', async ({ page }) => {
 
 test('honeypot discards without a network request', async ({ page }) => {
   let requests = 0
-  await page.route('https://api.web3forms.com/submit', route => { requests++; return route.abort() })
+  await page.route('https://n8n.salesteamio.com/webhook/website-contact', route => { requests++; return route.abort() })
   await fillContact(page)
   await page.locator('[name="website"]').evaluate(input => { (input as HTMLInputElement).value = 'spam.example' })
   await page.getByRole('button', { name: 'Request a systems audit' }).click()

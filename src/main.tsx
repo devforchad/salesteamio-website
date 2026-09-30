@@ -104,24 +104,25 @@ function Icon({ name }: { name: IconName }) {
 type FormStatus = 'idle' | 'submitting' | 'success' | 'error' | 'mailto'
 const contactEmail = 'chad@salesteamio.com'
 
-// Web3Forms expects its public access key in the JSON body, not the URL.
-async function sendContact(data: FormData, configuredEndpoint: string): Promise<void> {
-  const endpoint = new URL(configuredEndpoint)
-  const accessKey = endpoint.searchParams.get('access_key')
-  if (!accessKey) throw new Error('Form access key missing')
-  endpoint.search = ''
-  endpoint.hash = ''
-  const response = await fetch(endpoint.toString(), {
+// Our own n8n endpoint. Safe to ship in the bundle: it is a public POST URL
+// with no credential attached, CORS-locked to this origin, and the workflow
+// validates and rate-limits on the server side. VITE_FORM_ENDPOINT can still
+// override it (staging, or a swap to another provider) without a code change.
+const DEFAULT_FORM_ENDPOINT = 'https://n8n.salesteamio.com/webhook/website-contact'
+
+// Posts to our own n8n workflow at n8n.salesteamio.com, which persists the
+// submission to Postgres before emailing it on. No third-party form service,
+// and no API key in the client bundle.
+async function sendContact(data: FormData, endpoint: string): Promise<void> {
+  const response = await fetch(endpoint, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      access_key: accessKey,
       name: data.get('name'),
       email: data.get('email'),
       company: data.get('company'),
       message: data.get('message'),
-      subject: `Systems audit request — ${data.get('name')}`,
-      from_name: 'Sales Team IO website',
+      website: data.get('website'),
     }),
   })
   if (!response.ok || (await response.json()).success !== true) throw new Error('Form delivery failed')
@@ -140,7 +141,7 @@ function App() {
     if (submitting.current) return
     const data = new FormData(form)
     if (data.get('website')) { setFormStatus('success'); return }
-    const endpoint = import.meta.env.VITE_FORM_ENDPOINT?.trim()
+    const endpoint = import.meta.env.VITE_FORM_ENDPOINT?.trim() || DEFAULT_FORM_ENDPOINT
     if (!endpoint) {
       setFormStatus('mailto')
       const subject = encodeURIComponent(`Systems audit request — ${data.get('name')}`)
