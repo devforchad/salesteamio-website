@@ -1,6 +1,10 @@
 import { expect, test } from '@playwright/test'
+import { fileURLToPath } from 'node:url'
 
-const screenshotDir = '/docker/hermes-agent-kqk4/data/cache/scratch/sti-audit'
+// Repo-relative so this runs anywhere (CI has no /docker scratch dir).
+// Override with SCREENSHOT_DIR to collect the captures somewhere else.
+const screenshotDir = process.env.SCREENSHOT_DIR
+  ?? fileURLToPath(new URL('../test-results/screens', import.meta.url))
 
 test('self-hosted fonts, lightweight assets and valid structured data', async ({ page }) => {
   await page.goto('/')
