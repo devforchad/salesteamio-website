@@ -11,6 +11,7 @@
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 
 /* The operating diagrams share the site's squared, thin-line system language. */
+.contact-response{min-width:0}.form-honeypot{display:none}.contact .primary:disabled{opacity:.7;cursor:wait}.form-status{grid-column:1/-1;font-size:12px;line-height:1.6;margin:0;color:#082639}.form-status a{text-decoration:underline;text-underline-offset:3px;font-weight:800}.form-status a:focus-visible{outline:2px solid #07131c;outline-offset:3px}.form-confirmation{border:1px solid rgba(5,43,63,.33);padding:30px;background:rgba(255,255,255,.2)}.form-confirmation h3{font-size:22px;margin-bottom:9px}.form-confirmation p{margin:0;color:#082639}
 .system-visual{display:flex;align-items:center;justify-content:center}
 .visual-frame{width:100%;max-width:510px;border:1px solid rgba(112,199,242,.32);background:linear-gradient(145deg,#152635,#0b1722);box-shadow:0 25px 55px rgba(0,0,0,.3),inset 0 0 35px rgba(53,173,242,.035)}
 .visual-header,.visual-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 20px;font:500 9px 'DM Mono',monospace;letter-spacing:.1em;color:var(--blue-lite)}

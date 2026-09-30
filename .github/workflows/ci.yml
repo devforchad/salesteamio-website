@@ -26,6 +26,14 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - run: npm run check
 
+      # Playwright builds a placeholder-key bundle for mocked form tests.
+      # Replace it before upload with the configured real key (or mailto fallback).
+      - name: Build deployable website
+        if: github.event_name == 'push'
+        env:
+          VITE_FORM_ENDPOINT: ${{ secrets.VITE_FORM_ENDPOINT }}
+        run: npm run build
+
       - name: Configure GitHub Pages
         if: github.event_name == 'push'
         uses: actions/configure-pages@v5

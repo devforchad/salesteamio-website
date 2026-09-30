@@ -1,4 +1,4 @@
-import { FormEvent, useState } from 'react'
+import { FormEvent, useRef, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import './styles.css'
 
@@ -101,20 +101,63 @@ function Icon({ name }: { name: IconName }) {
   return <svg viewBox="0 0 24 24" aria-hidden="true"><path d={paths[name]} /></svg>
 }
 
+type FormStatus = 'idle' | 'submitting' | 'success' | 'error'
+const contactEmail = 'chad@salesteamio.com'
+
+// Web3Forms expects its public access key in the JSON body, not the URL.
+async function sendContact(data: FormData, configuredEndpoint: string): Promise<void> {
+  const endpoint = new URL(configuredEndpoint)
+  const accessKey = endpoint.searchParams.get('access_key')
+  if (!accessKey) throw new Error('Form access key missing')
+  endpoint.search = ''
+  endpoint.hash = ''
+  const response = await fetch(endpoint.toString(), {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      access_key: accessKey,
+      name: data.get('name'),
+      email: data.get('email'),
+      company: data.get('company'),
+      message: data.get('message'),
+      subject: `Systems audit request — ${data.get('name')}`,
+      from_name: 'Sales Team IO website',
+    }),
+  })
+  if (!response.ok || (await response.json()).success !== true) throw new Error('Form delivery failed')
+}
+
 function App() {
   const [menuOpen, setMenuOpen] = useState(false)
-  const [formStatus, setFormStatus] = useState('')
+  const [formStatus, setFormStatus] = useState<FormStatus>('idle')
+  const submitting = useRef(false)
 
   function closeMenu() { setMenuOpen(false) }
-  function submitForm(event: FormEvent<HTMLFormElement>) {
+  async function submitForm(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     const form = event.currentTarget
     if (!form.checkValidity()) { form.reportValidity(); return }
+    if (submitting.current) return
     const data = new FormData(form)
-    const subject = encodeURIComponent(`Systems audit request — ${data.get('name')}`)
-    const body = encodeURIComponent(`Name: ${data.get('name')}\nCompany: ${data.get('company')}\nEmail: ${data.get('email')}\n\nWhat needs attention:\n${data.get('message')}`)
-    setFormStatus('Your email app is opening with your request prepared.')
-    window.location.href = `mailto:chadpitton@gmail.com?subject=${subject}&body=${body}`
+    if (data.get('website')) { setFormStatus('success'); return }
+    const endpoint = import.meta.env.VITE_FORM_ENDPOINT?.trim()
+    if (!endpoint) {
+      setFormStatus('error')
+      const subject = encodeURIComponent(`Systems audit request — ${data.get('name')}`)
+      const body = encodeURIComponent(`Name: ${data.get('name')}\nCompany: ${data.get('company')}\nEmail: ${data.get('email')}\n\nWhat needs attention:\n${data.get('message')}`)
+      window.location.href = `mailto:${contactEmail}?subject=${subject}&body=${body}`
+      return
+    }
+    submitting.current = true
+    setFormStatus('submitting')
+    try {
+      await sendContact(data, endpoint)
+      setFormStatus('success')
+    } catch {
+      setFormStatus('error')
+    } finally {
+      submitting.current = false
+    }
   }
 
   return <>
@@ -144,9 +187,9 @@ function App() {
       <section className="outcomes"><div><p className="eyebrow"><span></span> WHAT CHANGES</p><h2>Make the next right action <em>obvious.</em></h2></div><ul><li><span>01</span><p>Leads are routed, owned, and followed up without relying on someone to remember.</p></li><li><span>02</span><p>Reps have the context they need, where they need it, when a conversation starts.</p></li><li><span>03</span><p>Leaders can see the pipeline and trust what the numbers are actually telling them.</p></li><li><span>04</span><p>Your team spends less time repairing processes and more time moving opportunities.</p></li></ul></section>
       <section className="section projects" id="projects"><div className="section-heading"><p className="eyebrow"><span></span> SELECTED SYSTEMS</p><h2>Built around the work<br/>that actually happens.</h2><p>Examples of operational problems solved across sales-driven teams. Details are intentionally kept public-safe.</p></div><div className="project-grid">{projects.map(([title, text], i) => <article className="project-card" key={title}><ProjectVisual index={i}/><div><p>OPERATIONS SYSTEM</p><h3>{title}</h3><p>{text}</p></div></article>)}</div></section>
       <section className="section about" id="about"><OperatorVisual/><div className="about-copy"><p className="eyebrow"><span></span> THE OPERATOR</p><h2>Built by someone who understands the <em>work behind the work.</em></h2><p>Sales Team IO is led by Chad Pitton, a revenue operations and automation consultant working hands-on from discovery through workflow mapping, implementation, testing, documentation, and user handoff.</p><p>His experience spans lending, home services, online education, and remote sales teams—where disconnected tools and unclear process quickly become expensive.</p><a className="text-link" href="https://linkedin.com/in/chadpitton" target="_blank" rel="noreferrer">Connect on LinkedIn <span>↗</span></a></div></section>
-      <section className="contact" id="contact"><div className="contact-heading"><p className="eyebrow"><span></span> START HERE</p><h2>Let’s make your sales operation <em>easier to run.</em></h2><p>Tell us what’s breaking down, getting missed, or taking too much manual effort. We’ll start with the system underneath it.</p></div><form onSubmit={submitForm}><label>Name<input name="name" required autoComplete="name" /></label><label>Work email<input name="email" type="email" required autoComplete="email" /></label><label>Company <span>(optional)</span><input name="company" autoComplete="organization" /></label><label>What needs attention?<textarea name="message" required rows={5} placeholder="A few lines about your sales process, tools, or bottleneck."></textarea></label><button className="button primary" type="submit">Request a systems audit <span>↗</span></button><p className="form-note">No backend here—submitting opens a prepared email to Sales Team IO.</p><p className="form-status" aria-live="polite">{formStatus}</p></form></section>
+      <section className="contact" id="contact"><div className="contact-heading"><p className="eyebrow"><span></span> START HERE</p><h2>Let’s make your sales operation <em>easier to run.</em></h2><p>Tell us what’s breaking down, getting missed, or taking too much manual effort. We’ll start with the system underneath it.</p></div><div className="contact-response" aria-live="polite" aria-atomic="true">{formStatus === 'success' ? <div className="form-confirmation"><h3>Thanks for reaching out.</h3><p>I’ll get back to you within one business day.</p></div> : <form onSubmit={submitForm}><label>Name<input name="name" required autoComplete="name" /></label><label>Work email<input name="email" type="email" required autoComplete="email" /></label><label>Company <span>(optional)</span><input name="company" autoComplete="organization" /></label><label>What needs attention?<textarea name="message" required rows={5} placeholder="A few lines about your sales process, tools, or bottleneck."></textarea></label><div className="form-honeypot" aria-hidden="true"><label>Website<input name="website" tabIndex={-1} autoComplete="off" /></label></div><button className="button primary" type="submit" disabled={formStatus === 'submitting'}>{formStatus === 'submitting' ? 'Sending your request…' : 'Request a systems audit'} <span aria-hidden="true">↗</span></button>{formStatus === 'error' && <p className="form-status" role="alert">Your request wasn’t sent. Please try again, or email me directly at <a href={`mailto:${contactEmail}`}>{contactEmail}</a>.</p>}</form>}</div></section>
     </main>
-    <footer><a className="brand" href="#top" aria-label="Back to top"><img src="/assets/logo-33.png" srcSet="/assets/logo-33.png 1x, /assets/logo-66.png 2x, /assets/logo-132.png 4x" width="33" height="33" alt="" /><span>SALES TEAM <b>IO</b></span></a><p>CRM · Automation · AI Enablement · Revenue Operations</p><div><a href="https://linkedin.com/in/chadpitton" target="_blank" rel="noreferrer">LinkedIn</a><a href="mailto:chadpitton@gmail.com">Email</a></div><small>© {new Date().getFullYear()} Sales Team.io LLC. All rights reserved.</small></footer>
+    <footer><a className="brand" href="#top" aria-label="Back to top"><img src="/assets/logo-33.png" srcSet="/assets/logo-33.png 1x, /assets/logo-66.png 2x, /assets/logo-132.png 4x" width="33" height="33" alt="" /><span>SALES TEAM <b>IO</b></span></a><p>CRM · Automation · AI Enablement · Revenue Operations</p><div><a href="https://linkedin.com/in/chadpitton" target="_blank" rel="noreferrer">LinkedIn</a><a href={`mailto:${contactEmail}`}>Email</a></div><small>© {new Date().getFullYear()} Sales Team.io LLC. All rights reserved.</small></footer>
   </>
 }
 
