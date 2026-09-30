@@ -62,9 +62,10 @@ function ProjectVisual({ index }: { index: number }) {
   if (index === 2) return <div className="project-art project-routing" role="img" aria-label="New leads enter one assignment engine and are routed to the right sales queue and representative">
     <span className="art-number">03 · OWNERSHIP ENGINE</span>
     <div className="route-input"><small>NEW LEADS</small><b>24</b><span>unassigned</span></div>
+    <span className="route-link" aria-hidden="true"></span>
     <div className="route-hub"><small>RULES</small><b>Territory + capacity</b></div>
+    <span className="route-branches" aria-hidden="true"></span>
     <div className="route-output"><span><i>A</i> East queue <b>8</b></span><span><i>B</i> West queue <b>9</b></span><span><i>C</i> Follow-up <b>7</b></span></div>
-    <svg viewBox="0 0 560 180" aria-hidden="true"><path d="M130 92H225"/><path d="M346 92H382V44H418"/><path d="M346 92H418"/><path d="M346 92H382V140H418"/></svg>
   </div>
 
   return <div className="project-art project-attribution" role="img" aria-label="Form and campaign attribution data are attached to the calendar event so the rep enters the call informed">
@@ -119,7 +120,7 @@ function App() {
   return <>
     <a className="skip-link" href="#main">Skip to content</a>
     <header className="site-header">
-      <a className="brand" href="#top" aria-label="Sales Team IO home" onClick={closeMenu}><img src="/assets/salesteamio-logo.png" alt="" /><span>SALES TEAM <b>IO</b></span></a>
+      <a className="brand" href="#top" aria-label="Sales Team IO home" onClick={closeMenu}><img src="/assets/logo-33.png" srcSet="/assets/logo-33.png 1x, /assets/logo-66.png 2x, /assets/logo-132.png 4x" width="33" height="33" alt="" /><span>SALES TEAM <b>IO</b></span></a>
       <button className="menu-button" aria-label="Toggle navigation" aria-controls="primary-navigation" aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}><i></i><i></i></button>
       <nav id="primary-navigation" className={menuOpen ? 'open' : ''} aria-label="Primary navigation">
         <a href="#services" onClick={closeMenu}>Services</a><a href="#approach" onClick={closeMenu}>Approach</a><a href="#projects" onClick={closeMenu}>Work</a><a href="#about" onClick={closeMenu}>About</a>
@@ -145,7 +146,7 @@ function App() {
       <section className="section about" id="about"><OperatorVisual/><div className="about-copy"><p className="eyebrow"><span></span> THE OPERATOR</p><h2>Built by someone who understands the <em>work behind the work.</em></h2><p>Sales Team IO is led by Chad Pitton, a revenue operations and automation consultant working hands-on from discovery through workflow mapping, implementation, testing, documentation, and user handoff.</p><p>His experience spans lending, home services, online education, and remote sales teams—where disconnected tools and unclear process quickly become expensive.</p><a className="text-link" href="https://linkedin.com/in/chadpitton" target="_blank" rel="noreferrer">Connect on LinkedIn <span>↗</span></a></div></section>
       <section className="contact" id="contact"><div className="contact-heading"><p className="eyebrow"><span></span> START HERE</p><h2>Let’s make your sales operation <em>easier to run.</em></h2><p>Tell us what’s breaking down, getting missed, or taking too much manual effort. We’ll start with the system underneath it.</p></div><form onSubmit={submitForm}><label>Name<input name="name" required autoComplete="name" /></label><label>Work email<input name="email" type="email" required autoComplete="email" /></label><label>Company <span>(optional)</span><input name="company" autoComplete="organization" /></label><label>What needs attention?<textarea name="message" required rows={5} placeholder="A few lines about your sales process, tools, or bottleneck."></textarea></label><button className="button primary" type="submit">Request a systems audit <span>↗</span></button><p className="form-note">No backend here—submitting opens a prepared email to Sales Team IO.</p><p className="form-status" aria-live="polite">{formStatus}</p></form></section>
     </main>
-    <footer><a className="brand" href="#top" aria-label="Back to top"><img src="/assets/salesteamio-logo.png" alt="" /><span>SALES TEAM <b>IO</b></span></a><p>CRM · Automation · AI Enablement · Revenue Operations</p><div><a href="https://linkedin.com/in/chadpitton" target="_blank" rel="noreferrer">LinkedIn</a><a href="mailto:chadpitton@gmail.com">Email</a></div><small>© {new Date().getFullYear()} Sales Team.io LLC. All rights reserved.</small></footer>
+    <footer><a className="brand" href="#top" aria-label="Back to top"><img src="/assets/logo-33.png" srcSet="/assets/logo-33.png 1x, /assets/logo-66.png 2x, /assets/logo-132.png 4x" width="33" height="33" alt="" /><span>SALES TEAM <b>IO</b></span></a><p>CRM · Automation · AI Enablement · Revenue Operations</p><div><a href="https://linkedin.com/in/chadpitton" target="_blank" rel="noreferrer">LinkedIn</a><a href="mailto:chadpitton@gmail.com">Email</a></div><small>© {new Date().getFullYear()} Sales Team.io LLC. All rights reserved.</small></footer>
   </>
 }
 
