@@ -15,6 +15,17 @@ Vite will print the local URL. Use `npm run build` to run the TypeScript build a
 
 The form validates in the browser and sends a JSON request to Web3Forms. Register `chad@salesteamio.com` as the recipient with Web3Forms, then set the GitHub Actions repository secret `VITE_FORM_ENDPOINT` to `https://api.web3forms.com/submit?access_key=YOUR_KEY` (see `.env.example`). The deploy build reads that setting; Playwright uses a separate placeholder key with mocked requests. The public access key is embedded in the static bundle; restrict the domain with Web3Forms. No real key is supplied in this repository. Until configured, submissions fall back to a prefilled email draft and display a direct email link. Provider failures also show the email link; the form never claims delivery before confirmation. A hidden honeypot filters basic bots. The site has no own backend or storage.
 
+## Client Engine page
+
+A second page lives at `https://salesteamio.com/client-engine/`. It sells the Client Engine offer to Instagram coaches and creators.
+
+- Entry: `client-engine/index.html` (second Vite input in `vite.config.ts`)
+- Source: `src/client-engine.tsx` and `src/client-engine.css` (reuses `src/styles.css`)
+- Shared form code: `src/contact.ts` (`sendContact`, the default endpoint and the contact email), used by both pages
+- Tests: `tests/client-engine.spec.ts`
+
+The application form reuses the `website-contact` n8n endpoint. That workflow accepts only `name`, `email`, `company`, `message` and `website`, so the Instagram handle is sent as `company` and the remaining answers are packed into `message`.
+
 ## Deployment
 
 The site is deployed to GitHub Pages from `main` after the automated checks pass. The production build is generated with `npm run build` and uploaded from `dist/`.

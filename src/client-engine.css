@@ -1,0 +1,91 @@
+/* Client Engine page: only what the home page styles don't already cover. */
+.system-visual .system-flow li{grid-template-columns:minmax(0,1fr);padding-left:16px}
+.system-visual .visual-frame{border-radius:16px;overflow:hidden}
+.system-visual .system-flow li{border-radius:10px}
+
+.ce-leak,.ce-includes,.ce-packages,.ce-proof,.ce-process,.ce-faq,.ce-apply{padding-top:90px;padding-bottom:30px}
+.ce-apply{padding-bottom:110px}
+.ce-head{margin-bottom:22px}
+.ce-head h2{max-width:760px}
+.ce-intro{color:#91a2af;font-size:15px;line-height:1.75;max-width:640px;margin:0 0 38px}
+
+.ce-grid{display:grid;gap:17px}
+.ce-grid-3{grid-template-columns:repeat(3,1fr)}
+.ce-grid-4{grid-template-columns:repeat(4,1fr)}
+.ce-grid-proof{grid-template-columns:repeat(2,1fr)}.ce-grid-proof>:last-child:nth-child(odd){grid-column:1/-1}
+.ce-card{position:relative;border:1px solid var(--line);border-radius:14px;background:#0e1923;padding:26px;display:flex;flex-direction:column;min-width:0}
+.ce-card:hover{background:#101e2b}
+.ce-card>small{font:500 10px 'DM Mono',monospace;letter-spacing:.12em;color:var(--blue);margin-bottom:18px}
+.ce-card h3{font-size:18px;letter-spacing:-.03em;margin-bottom:10px}
+.ce-card p{font-size:13px;line-height:1.75;color:#91a1ad;margin:0}
+
+.ce-package{padding-top:30px}
+.ce-package.featured{border-color:rgba(53,173,242,.7);background:linear-gradient(160deg,#142636,#0e1923);box-shadow:0 18px 45px rgba(53,173,242,.12)}
+.ce-badge{position:absolute;top:-12px;left:26px;font:500 9px 'DM Mono',monospace;letter-spacing:.12em;text-transform:uppercase;background:var(--blue);color:#06101a;padding:5px 10px;border-radius:999px}
+.ce-card p.ce-price{font-size:42px;font-weight:800;letter-spacing:-.05em;line-height:1.1;color:var(--white);margin:0 0 6px}
+.ce-card p.ce-blurb{color:#b4c3cf;margin-bottom:20px}
+.ce-package ul{list-style:none;padding:0;margin:0 0 26px;border-top:1px solid var(--line)}
+.ce-package li{padding:11px 0 11px 22px;border-bottom:1px solid var(--line);font-size:13px;line-height:1.55;color:#c2d0d9;position:relative}
+.ce-package li:before{content:'';position:absolute;left:3px;top:17px;width:9px;height:5px;border-left:1.5px solid var(--blue);border-bottom:1.5px solid var(--blue);transform:rotate(-45deg)}
+.ce-package .button{margin-top:auto;border-radius:8px}
+.ce-addons{margin:28px 0 8px;font-size:14px;color:#c2d0d9;line-height:1.7}
+.ce-addons b{color:var(--white)}
+.ce-small{margin:0;font-size:12px;color:#8799a8}
+
+.ce-stat{display:flex;align-items:baseline;gap:12px;margin-top:18px!important}
+.ce-card p.ce-stat b{font-size:34px;letter-spacing:-.05em;color:var(--blue)}
+.ce-card p.ce-stat span{font:500 10px 'DM Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--blue-lite)}
+.ce-card .text-link{align-self:flex-start;margin-top:auto}
+.ce-card p+.text-link{margin-top:22px}
+
+.ce-process .process li{grid-template-columns:96px 1fr}
+.ce-process .process p{font-size:14px}
+.ce-process .process h3{font-size:19px}
+
+.ce-faq-list{border-top:1px solid var(--line);max-width:820px}
+.ce-faq-list details{border-bottom:1px solid var(--line)}
+.ce-faq-list summary{cursor:pointer;list-style:none;padding:20px 40px 20px 0;font-size:16px;font-weight:700;position:relative;border-radius:4px}
+.ce-faq-list summary::-webkit-details-marker{display:none}
+.ce-faq-list summary:after{content:'+';position:absolute;right:6px;top:50%;transform:translateY(-50%);font:500 20px 'DM Mono',monospace;color:var(--blue)}
+.ce-faq-list details[open] summary:after{content:'–'}
+.ce-faq-list p{margin:0 0 22px;color:#9aabb8;font-size:14px;line-height:1.75;max-width:680px}
+
+.ce-apply{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start}
+.ce-apply .ce-intro{margin-bottom:0}
+.ce-apply-response{min-width:0}
+.ce-apply form{display:grid;grid-template-columns:1fr 1fr;gap:16px 18px;border:1px solid var(--line);border-radius:14px;background:#0e1923;padding:28px}
+.ce-apply label{font-size:11px;font-weight:800;color:#c9d7e0}
+.ce-apply label span{font-weight:500;color:var(--slate)}
+.ce-apply label.wide,.ce-apply form>button,.ce-apply .ce-status{grid-column:1/-1}
+.ce-apply input,.ce-apply textarea,.ce-apply select{display:block;width:100%;margin-top:7px;border:1px solid rgba(166,211,239,.28);border-radius:8px;padding:12px;background:rgba(255,255,255,.05);color:var(--white);font-size:14px}
+.ce-apply select option{color:#07131c}
+.ce-apply textarea{resize:vertical}
+.ce-apply input::placeholder,.ce-apply textarea::placeholder{color:#7d8e9c}
+.ce-apply input:focus-visible,.ce-apply textarea:focus-visible,.ce-apply select:focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-color:var(--blue)}
+.ce-apply .primary{justify-self:start;border-radius:8px}
+.ce-apply .primary:disabled{opacity:.7;cursor:wait}
+.ce-status{margin:0;font-size:13px;line-height:1.6;color:#ffd0c8}
+.ce-status a{text-decoration:underline;text-underline-offset:3px;font-weight:800}
+.ce-confirmation{border:1px solid rgba(102,220,160,.4);border-radius:14px;background:rgba(102,220,160,.07);padding:30px}
+.ce-confirmation p{margin:0;font-size:16px;line-height:1.7;color:var(--white)}
+
+a:focus-visible,summary:focus-visible,button:focus-visible{outline:2px solid var(--blue);outline-offset:3px}
+
+@media(max-width:1000px){.ce-grid-4{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:800px){
+  .ce-leak,.ce-includes,.ce-packages,.ce-proof,.ce-process,.ce-faq,.ce-apply{padding-top:64px;padding-bottom:16px}
+  .ce-apply{padding-bottom:80px}
+  .ce-grid-3,.ce-grid-proof{grid-template-columns:1fr}
+  .ce-pricing .featured{order:-1}
+  .ce-pricing{gap:26px}
+  .ce-apply{grid-template-columns:1fr;gap:34px}
+}
+@media(max-width:520px){
+  .ce-grid-4{grid-template-columns:1fr}
+  .ce-apply form{grid-template-columns:1fr;padding:20px}
+  .ce-process .process li{grid-template-columns:1fr}
+  .ce-process .process li>div{grid-column:1;grid-row:2}
+  .ce-card p.ce-price{font-size:36px}
+  .ce-apply form>button{justify-self:stretch}
+}
+@media(prefers-reduced-motion:reduce){.ce-card,.primary{transition:none}.primary:hover{transform:none}}

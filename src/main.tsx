@@ -1,6 +1,7 @@
 import { FormEvent, useRef, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import './styles.css'
+import { contactEmail, DEFAULT_FORM_ENDPOINT, sendContact } from './contact'
 
 type IconName = 'grid' | 'route' | 'bolt' | 'spark' | 'chart' | 'check'
 
@@ -102,31 +103,6 @@ function Icon({ name }: { name: IconName }) {
 }
 
 type FormStatus = 'idle' | 'submitting' | 'success' | 'error' | 'mailto'
-const contactEmail = 'chad@salesteamio.com'
-
-// Our own n8n endpoint. Safe to ship in the bundle: it is a public POST URL
-// with no credential attached, CORS-locked to this origin, and the workflow
-// validates and rate-limits on the server side. VITE_FORM_ENDPOINT can still
-// override it (staging, or a swap to another provider) without a code change.
-const DEFAULT_FORM_ENDPOINT = 'https://n8n.salesteamio.com/webhook/website-contact'
-
-// Posts to our own n8n workflow at n8n.salesteamio.com, which persists the
-// submission to Postgres before emailing it on. No third-party form service,
-// and no API key in the client bundle.
-async function sendContact(data: FormData, endpoint: string): Promise<void> {
-  const response = await fetch(endpoint, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      name: data.get('name'),
-      email: data.get('email'),
-      company: data.get('company'),
-      message: data.get('message'),
-      website: data.get('website'),
-    }),
-  })
-  if (!response.ok || (await response.json()).success !== true) throw new Error('Form delivery failed')
-}
 
 function App() {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -152,7 +128,13 @@ function App() {
     submitting.current = true
     setFormStatus('submitting')
     try {
-      await sendContact(data, endpoint)
+      await sendContact({
+        name: data.get('name'),
+        email: data.get('email'),
+        company: data.get('company'),
+        message: data.get('message'),
+        website: data.get('website'),
+      }, endpoint)
       setFormStatus('success')
     } catch {
       setFormStatus('error')
@@ -168,6 +150,7 @@ function App() {
       <button className="menu-button" aria-label="Toggle navigation" aria-controls="primary-navigation" aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}><i></i><i></i></button>
       <nav id="primary-navigation" className={menuOpen ? 'open' : ''} aria-label="Primary navigation">
         <a href="#services" onClick={closeMenu}>Services</a><a href="#approach" onClick={closeMenu}>Approach</a><a href="#projects" onClick={closeMenu}>Work</a><a href="#about" onClick={closeMenu}>About</a>
+        <a href="/client-engine/">For creators</a>
         <a className="nav-cta" href="#contact" onClick={closeMenu}>Request an audit <span>↗</span></a>
       </nav>
     </header>
@@ -190,7 +173,7 @@ function App() {
       <section className="section about" id="about"><OperatorVisual/><div className="about-copy"><p className="eyebrow"><span></span> THE OPERATOR</p><h2>Built by someone who understands the <em>work behind the work.</em></h2><p>Sales Team IO is led by Chad Pitton, a revenue operations and automation consultant working hands-on from discovery through workflow mapping, implementation, testing, documentation, and user handoff.</p><p>His experience spans lending, home services, online education, and remote sales teams—where disconnected tools and unclear process quickly become expensive.</p><a className="text-link" href="https://linkedin.com/in/chadpitton" target="_blank" rel="noreferrer">Connect on LinkedIn <span>↗</span></a></div></section>
       <section className="contact" id="contact"><div className="contact-heading"><p className="eyebrow"><span></span> START HERE</p><h2>Let’s make your sales operation <em>easier to run.</em></h2><p>Tell us what’s breaking down, getting missed, or taking too much manual effort. We’ll start with the system underneath it.</p></div><div className="contact-response" aria-live="polite" aria-atomic="true">{formStatus === 'success' ? <div className="form-confirmation"><h3>Thanks for reaching out.</h3><p>I’ll get back to you within one business day.</p></div> : <form onSubmit={submitForm}><label>Name<input name="name" required autoComplete="name" /></label><label>Work email<input name="email" type="email" required autoComplete="email" /></label><label>Company <span>(optional)</span><input name="company" autoComplete="organization" /></label><label>What needs attention?<textarea name="message" required rows={5} placeholder="A few lines about your sales process, tools, or bottleneck."></textarea></label><div className="form-honeypot" aria-hidden="true"><label>Website<input name="website" tabIndex={-1} autoComplete="off" /></label></div><button className="button primary" type="submit" disabled={formStatus === 'submitting'}>{formStatus === 'submitting' ? 'Sending your request…' : 'Request a systems audit'} <span aria-hidden="true">↗</span></button>{formStatus === 'error' && <p className="form-status" role="alert">Your request wasn’t sent. Please try again, or email me directly at <a href={`mailto:${contactEmail}`}>{contactEmail}</a>.</p>}{formStatus === 'mailto' && <p className="form-status" role="status">Opening your email app with this message ready to send. If nothing opened, email me directly at <a href={`mailto:${contactEmail}`}>{contactEmail}</a>.</p>}</form>}</div></section>
     </main>
-    <footer><a className="brand" href="#top" aria-label="Back to top"><img src="/assets/logo-33.png" srcSet="/assets/logo-33.png 1x, /assets/logo-66.png 2x, /assets/logo-132.png 4x" width="33" height="33" alt="" /><span>SALES TEAM <b>IO</b></span></a><p>CRM · Automation · AI Enablement · Revenue Operations</p><div><a href="https://linkedin.com/in/chadpitton" target="_blank" rel="noreferrer">LinkedIn</a><a href={`mailto:${contactEmail}`}>Email</a></div><small>© {new Date().getFullYear()} Sales Team.io LLC. All rights reserved.</small></footer>
+    <footer><a className="brand" href="#top" aria-label="Back to top"><img src="/assets/logo-33.png" srcSet="/assets/logo-33.png 1x, /assets/logo-66.png 2x, /assets/logo-132.png 4x" width="33" height="33" alt="" /><span>SALES TEAM <b>IO</b></span></a><p>CRM · Automation · AI Enablement · Revenue Operations</p><div><a href="https://linkedin.com/in/chadpitton" target="_blank" rel="noreferrer">LinkedIn</a><a href={`mailto:${contactEmail}`}>Email</a><a href="/client-engine/">Client Engine</a></div><small>© {new Date().getFullYear()} Sales Team.io LLC. All rights reserved.</small></footer>
   </>
 }
 
