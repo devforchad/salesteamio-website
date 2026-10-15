@@ -24,6 +24,18 @@ test('mobile menu exposes the primary links', async ({ page }, testInfo) => {
   await expect(page.getByRole('navigation').getByRole('link', { name: 'Services' })).toBeVisible()
 })
 
+test('Escape closes the mobile menu and returns focus to the button', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'mobile', 'mobile-only behavior')
+  await page.goto('/')
+
+  const menu = page.getByRole('button', { name: 'Toggle navigation' })
+  await menu.click()
+  await expect(menu).toHaveAttribute('aria-expanded', 'true')
+  await page.keyboard.press('Escape')
+  await expect(menu).toHaveAttribute('aria-expanded', 'false')
+  await expect(menu).toBeFocused()
+})
+
 test('contact form validates required fields', async ({ page }) => {
   await page.goto('/#contact')
 

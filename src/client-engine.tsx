@@ -1,7 +1,8 @@
-import { FormEvent, useRef, useState } from 'react'
+import { FormEvent, useEffect, useRef, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import './styles.css'
 import './client-engine.css'
+import { ArrowIcon } from './arrow'
 import { contactEmail, DEFAULT_FORM_ENDPOINT, sendContact } from './contact'
 
 const DEMO_URL = 'https://demo.salesteamio.com/supple-warriors-sms-agent'
@@ -34,10 +35,10 @@ const packages = [
 
 const proof: { title: string; text: string; stat?: [string, string]; link?: [string, string] }[] = [
   { title: 'Supple Warriors: sales systems.', text: 'I run the CRM, Stripe-verified sales attribution and the live sales leaderboard for Supple Warriors, a mobility coaching business. The leaderboard tracks over $235,000 in verified sales.', stat: ['$235k+', 'verified sales tracked'] },
-  { title: 'Supple Warriors: AI SMS setter.', text: 'An AI setter built to re-engage 654 past leads, qualify them and book calls. Click through 14 real conversations.', link: [DEMO_URL, 'Open the demo ↗'] },
+  { title: 'Supple Warriors: AI SMS setter.', text: 'An AI setter built to re-engage 654 past leads, qualify them and book calls. Click through 14 real conversations.', link: [DEMO_URL, 'Open the demo'] },
   { title: 'eCom Babes: operations since 2020.', text: 'CRM, campaigns, webinars, payments and student onboarding for an online education brand, run day to day since 2020.' },
-  { title: 'Rehab clinic funnel.', text: 'A patient funnel for a physical therapy practice: pain quiz, tailored plan, booking.', link: ['https://demo.salesteamio.com/rehab/', 'Open the funnel ↗'] },
-  { title: 'Med spa AI receptionist.', text: 'An AI texting assistant that rebooks clients, handles pricing questions and knows when to hand off to staff.', link: ['https://demo.salesteamio.com/med-spa-sms-agent', 'Open the demo ↗'] },
+  { title: 'Rehab clinic funnel.', text: 'A patient funnel for a physical therapy practice: pain quiz, tailored plan, booking.', link: ['https://demo.salesteamio.com/rehab/', 'Open the funnel'] },
+  { title: 'Med spa AI receptionist.', text: 'An AI texting assistant that rebooks clients, handles pricing questions and knows when to hand off to staff.', link: ['https://demo.salesteamio.com/med-spa-sms-agent', 'Open the demo'] },
 ]
 
 const steps = [
@@ -85,6 +86,18 @@ function App() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [formStatus, setFormStatus] = useState<FormStatus>('idle')
   const submitting = useRef(false)
+  const menuButton = useRef<HTMLButtonElement>(null)
+
+  useEffect(() => {
+    if (!menuOpen) return
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return
+      setMenuOpen(false)
+      menuButton.current?.focus()
+    }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [menuOpen])
 
   function closeMenu() { setMenuOpen(false) }
   async function submitForm(event: FormEvent<HTMLFormElement>) {
@@ -134,10 +147,10 @@ function App() {
     <a className="skip-link" href="#main">Skip to content</a>
     <header className="site-header">
       <a className="brand" href="/" aria-label="Sales Team IO home"><img src="/assets/logo-33.png" srcSet="/assets/logo-33.png 1x, /assets/logo-66.png 2x, /assets/logo-132.png 4x" width="33" height="33" alt="" /><span>SALES TEAM <b>IO</b></span></a>
-      <button className="menu-button" aria-label="Toggle navigation" aria-controls="primary-navigation" aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}><i></i><i></i></button>
+      <button ref={menuButton} className="menu-button" aria-label="Toggle navigation" aria-controls="primary-navigation" aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}><i></i><i></i></button>
       <nav id="primary-navigation" className={menuOpen ? 'open' : ''} aria-label="Primary navigation">
         <a href="#packages" onClick={closeMenu}>Packages</a><a href="#proof" onClick={closeMenu}>Proof</a><a href="#process" onClick={closeMenu}>Process</a><a href="#faq" onClick={closeMenu}>FAQ</a>
-        <a className="nav-cta" href="#apply" onClick={closeMenu}>Apply now <span>↗</span></a>
+        <a className="nav-cta" href="#apply" onClick={closeMenu}>Apply now <span><ArrowIcon dir="up-right" /></span></a>
       </nav>
     </header>
     <main id="main">
@@ -146,7 +159,7 @@ function App() {
           <p className="eyebrow"><span></span> CLIENT ENGINE · FOR COACHES &amp; CREATORS</p>
           <h1>Turn your followers into <em>booked calls.</em></h1>
           <p className="hero-text">I build the page, the emails, the ad scripts, and an AI assistant that texts every new lead in under a minute. Live in about 7 days, for a fraction of what an agency charges.</p>
-          <div className="actions"><a className="button primary" href="#apply">Apply for a founding spot <span>↗</span></a><a className="button secondary" href={DEMO_URL} target="_blank" rel="noreferrer">See the AI setter demo <span>↗</span></a></div>
+          <div className="actions"><a className="button primary" href="#apply">Apply for a founding spot <span><ArrowIcon dir="up-right" /></span></a><a className="button secondary" href={DEMO_URL} target="_blank" rel="noreferrer">See the AI setter demo <span><ArrowIcon dir="up-right" /></span></a></div>
           <p className="microcopy"><span className="dot"></span> Founding rates for the first 10 clients.</p>
         </div>
         <FlowVisual />
@@ -185,7 +198,7 @@ function App() {
           <h3>{item.title}</h3>
           <p>{item.text}</p>
           {item.stat && <p className="ce-stat"><b>{item.stat[0]}</b><span>{item.stat[1]}</span></p>}
-          {item.link && <a className="text-link" href={item.link[0]} target="_blank" rel="noreferrer">{item.link[1].replace(' ↗', '')} <span>↗</span></a>}
+          {item.link && <a className="text-link" href={item.link[0]} target="_blank" rel="noreferrer">{item.link[1]} <span><ArrowIcon dir="up-right" /></span></a>}
         </article>)}</div>
       </section>
 
@@ -218,7 +231,7 @@ function App() {
             {packageOptions.map(option => <option key={option} value={option}>{option}</option>)}
           </select></label>
           <div className="form-honeypot" aria-hidden="true"><label>Website<input name="website" tabIndex={-1} autoComplete="off" /></label></div>
-          <button className="button primary" type="submit" disabled={formStatus === 'submitting'}>{formStatus === 'submitting' ? 'Sending your application…' : 'Apply for a founding spot'} <span aria-hidden="true">↗</span></button>
+          <button className="button primary" type="submit" disabled={formStatus === 'submitting'}>{formStatus === 'submitting' ? 'Sending your application…' : 'Apply for a founding spot'} <span aria-hidden="true"><ArrowIcon dir="up-right" /></span></button>
           {formStatus === 'error' && <p className="ce-status" role="alert">Your application wasn’t sent. Please try again, or email me directly at <a href={`mailto:${contactEmail}`}>{contactEmail}</a>.</p>}
           {formStatus === 'mailto' && <p className="ce-status" role="status">Opening your email app with this message ready to send. If nothing opened, email me directly at <a href={`mailto:${contactEmail}`}>{contactEmail}</a>.</p>}
         </form>}</div>

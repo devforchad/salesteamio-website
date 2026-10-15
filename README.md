@@ -13,7 +13,7 @@ Vite will print the local URL. Use `npm run build` to run the TypeScript build a
 
 ## Contact form
 
-The form validates in the browser and sends a JSON request to Web3Forms. Register `chad@salesteamio.com` as the recipient with Web3Forms, then set the GitHub Actions repository secret `VITE_FORM_ENDPOINT` to `https://api.web3forms.com/submit?access_key=YOUR_KEY` (see `.env.example`). The deploy build reads that setting; Playwright uses a separate placeholder key with mocked requests. The public access key is embedded in the static bundle; restrict the domain with Web3Forms. No real key is supplied in this repository. Until configured, submissions fall back to a prefilled email draft and display a direct email link. Provider failures also show the email link; the form never claims delivery before confirmation. A hidden honeypot filters basic bots. The site has no own backend or storage.
+Both forms (home page and Client Engine) validate in the browser, then POST JSON to the n8n webhook `https://n8n.salesteamio.com/webhook/website-contact` (see `src/contact.ts`). The workflow persists each submission to Postgres and then emails it. Set `VITE_FORM_ENDPOINT` to override the endpoint (staging, or another provider). If delivery fails, the form stays filled and shows a direct email link; it never claims delivery before the webhook confirms. A hidden honeypot field, `website`, filters basic bots.
 
 ## Client Engine page
 

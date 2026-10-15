@@ -19,6 +19,18 @@ test('self-hosted fonts, lightweight assets and valid structured data', async ({
   expect(resources.some(entry => entry.name.endsWith('/assets/salesteamio-logo.png'))).toBe(false)
 })
 
+test('no horizontal overflow on either page at 820, 900 and 1024', async ({ page }) => {
+  for (const path of ['/', '/client-engine/']) {
+    for (const width of [820, 900, 1024]) {
+      await page.setViewportSize({ width, height: 900 })
+      await page.goto(path)
+      await page.evaluate(() => document.fonts.ready)
+      const { scroll, client } = await page.evaluate(() => ({ scroll: document.documentElement.scrollWidth, client: document.documentElement.clientWidth }))
+      expect(scroll, `${path} at ${width}px`).toBeLessThanOrEqual(client)
+    }
+  }
+})
+
 test('section audit and connected routing at desktop, tablet and phone widths', async ({ page }) => {
   for (const width of [1280, 1024, 800, 390]) {
     await page.setViewportSize({ width, height: 900 })
