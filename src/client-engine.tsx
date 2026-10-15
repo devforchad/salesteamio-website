@@ -188,6 +188,7 @@ function App() {
         </article>)}</div>
         <p className="ce-addons"><b>Add-ons:</b> Ads Launch Pack +$1,000 · AI SMS setter +$1,500 · <b>Ongoing:</b> new hooks, tuning and reporting from $1,000/month.</p>
         <p className="ce-small">50% to start, 50% at launch. Two rounds of revisions included.</p>
+        <p className="ce-addons">Not ready for done-for-you? <a href="/kit/">Start with the $27 Creator Funnel Kit →</a></p>
       </section>
 
       <section className="section ce-proof" id="proof">

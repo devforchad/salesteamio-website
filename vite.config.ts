@@ -9,6 +9,7 @@ export default defineConfig({
       input: {
         main: fileURLToPath(new URL('index.html', import.meta.url)),
         clientEngine: fileURLToPath(new URL('client-engine/index.html', import.meta.url)),
+        kit: fileURLToPath(new URL('kit/index.html', import.meta.url)),
       },
     },
   },

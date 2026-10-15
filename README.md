@@ -26,6 +26,16 @@ A second page lives at `https://salesteamio.com/client-engine/`. It sells the Cl
 
 The application form reuses the `website-contact` n8n endpoint. That workflow accepts only `name`, `email`, `company`, `message` and `website`, so the Instagram handle is sent as `company` and the remaining answers are packed into `message`.
 
+## Kit page
+
+`https://salesteamio.com/kit/` sells The Creator Funnel Kit ($27).
+
+- Entry: `kit/index.html` (Vite input in `vite.config.ts`)
+- Source: `src/kit.tsx` and `src/kit.css` (reuses the `ce-` classes from `src/client-engine.css`)
+- Tests: `tests/kit.spec.ts`
+- Set `VITE_KIT_PAYMENT_LINK` to a Stripe Payment Link to turn the buy buttons into purchase links. While it is empty, the buttons scroll to a launch-list form that posts to the same n8n endpoint.
+- Kit files are never stored in this repo (it is public). Delivery is a separate unlisted page.
+
 ## Deployment
 
 The site is deployed to GitHub Pages from `main` after the automated checks pass. The production build is generated with `npm run build` and uploaded from `dist/`.
