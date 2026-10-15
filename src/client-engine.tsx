@@ -76,8 +76,8 @@ function FlowVisual() {
   </div>
 }
 
-function SectionHead({ eyebrow, children }: { eyebrow: string; children: React.ReactNode }) {
-  return <div className="ce-head"><p className="eyebrow"><span></span> {eyebrow}</p><h2>{children}</h2></div>
+function SectionHead({ children }: { children: React.ReactNode }) {
+  return <div className="ce-head"><h2>{children}</h2></div>
 }
 
 type FormStatus = 'idle' | 'submitting' | 'success' | 'error' | 'mailto'
@@ -156,28 +156,27 @@ function App() {
     <main id="main">
       <section className="hero" id="top">
         <div className="hero-copy">
-          <p className="eyebrow"><span></span> CLIENT ENGINE · FOR COACHES &amp; CREATORS</p>
           <h1>Turn your followers into <em>booked calls.</em></h1>
           <p className="hero-text">I build the page, the emails, the ad scripts, and an AI assistant that texts every new lead in under a minute. Live in about 7 days, for a fraction of what an agency charges.</p>
           <div className="actions"><a className="button primary" href="#apply">Apply for a founding spot <span><ArrowIcon dir="up-right" /></span></a><a className="button secondary" href={DEMO_URL} target="_blank" rel="noreferrer">See the AI setter demo <span><ArrowIcon dir="up-right" /></span></a></div>
-          <p className="microcopy"><span className="dot"></span> Founding rates for the first 10 clients.</p>
+          <p className="microcopy"><span className="dot"></span> Built for coaches and creators. Founding rates for the first 10 clients.</p>
         </div>
         <FlowVisual />
       </section>
 
       <section className="section ce-leak" id="leak">
-        <SectionHead eyebrow="THE PROBLEM">Your audience is there. <em>The system isn’t.</em></SectionHead>
+        <SectionHead>Your audience is there. <em>The system isn’t.</em></SectionHead>
         <p className="ce-intro">Most creators with 50k–400k followers send people to a link-in-bio and hope. Three things usually go wrong:</p>
-        <div className="ce-grid ce-grid-3">{leaks.map(([title, text], i) => <article className="ce-card" key={title}><small>{String(i + 1).padStart(2, '0')}</small><h3>{title}</h3><p>{text}</p></article>)}</div>
+        <div className="ce-grid ce-grid-3">{leaks.map(([title, text]) => <article className="ce-card" key={title}><h3>{title}</h3><p>{text}</p></article>)}</div>
       </section>
 
       <section className="section ce-includes" id="what-you-get">
-        <SectionHead eyebrow="WHAT’S IN A CLIENT ENGINE">Everything between a follow and <em>a sale.</em></SectionHead>
-        <div className="ce-grid ce-grid-4">{includes.map(([title, text], i) => <article className="ce-card" key={title}><small>{String(i + 1).padStart(2, '0')}</small><h3>{title}</h3><p>{text}</p></article>)}</div>
+        <SectionHead>Everything between a follow and <em>a sale.</em></SectionHead>
+        <div className="ce-grid ce-grid-4">{includes.map(([title, text]) => <article className="ce-card" key={title}><h3>{title}</h3><p>{text}</p></article>)}</div>
       </section>
 
       <section className="section ce-packages" id="packages">
-        <SectionHead eyebrow="PACKAGES">Fixed scope. <em>Founding prices.</em></SectionHead>
+        <SectionHead>Fixed scope. <em>Founding prices.</em></SectionHead>
         <p className="ce-intro">Founding rates apply to the first 10 clients, in exchange for an honest review and permission to share results. Prices go up after that.</p>
         <div className="ce-grid ce-grid-3 ce-pricing">{packages.map(pkg => <article className={pkg.featured ? 'ce-card ce-package featured' : 'ce-card ce-package'} key={pkg.name}>
           {pkg.featured && <span className="ce-badge">Most popular</span>}
@@ -192,7 +191,7 @@ function App() {
       </section>
 
       <section className="section ce-proof" id="proof">
-        <SectionHead eyebrow="PROOF">Built on systems that <em>already sell.</em></SectionHead>
+        <SectionHead>Built on systems that <em>already sell.</em></SectionHead>
         <p className="ce-intro">I’m Chad Pitton. I’ve spent six years building the sales systems behind online coaching and education businesses. Here’s real work you can look at today.</p>
         <div className="ce-grid ce-grid-proof">{proof.map(item => <article className="ce-card" key={item.title}>
           <h3>{item.title}</h3>
@@ -203,18 +202,18 @@ function App() {
       </section>
 
       <section className="section ce-process" id="process">
-        <SectionHead eyebrow="HOW IT WORKS">Live in about <em>7 days.</em></SectionHead>
+        <SectionHead>Live in about <em>7 days.</em></SectionHead>
         <ol className="process" aria-label="Five steps from kickoff to launch">{steps.map(([day, title, text]) => <li key={day}><b>{day}</b><div><h3>{title}</h3><p>{text}</p></div></li>)}</ol>
       </section>
 
       <section className="section ce-faq" id="faq">
-        <SectionHead eyebrow="FAQ">Questions, <em>answered.</em></SectionHead>
+        <SectionHead>Questions, <em>answered.</em></SectionHead>
         <div className="ce-faq-list">{faqs.map(([question, answer]) => <details key={question}><summary>{question}</summary><p>{answer}</p></details>)}</div>
       </section>
 
       <section className="section ce-apply" id="apply">
         <div className="ce-apply-copy">
-          <SectionHead eyebrow="APPLY">Claim a <em>founding spot.</em></SectionHead>
+          <SectionHead>Claim a <em>founding spot.</em></SectionHead>
           <p className="ce-intro">Tell me about your audience and offer. I’ll review your page and reply within one business day with a call time.</p>
         </div>
         <div className="ce-apply-response" aria-live="polite" aria-atomic="true">{formStatus === 'success' ? <div className="ce-confirmation"><p><b>Application received.</b> I’ll review your page and get back to you within one business day.</p></div> : <form onSubmit={submitForm}>

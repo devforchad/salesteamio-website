@@ -14,13 +14,12 @@
 .ce-grid-proof{grid-template-columns:repeat(2,1fr)}.ce-grid-proof>:last-child:nth-child(odd){grid-column:1/-1}
 .ce-card{position:relative;border:1px solid var(--line);background:#0e1923;padding:26px;display:flex;flex-direction:column;min-width:0}
 .ce-card:hover{background:#101e2b}
-.ce-card>small{font:500 10px 'DM Mono',monospace;letter-spacing:.12em;color:var(--blue);margin-bottom:18px}
 .ce-card h3{font-size:18px;letter-spacing:-.03em;margin-bottom:10px}
 .ce-card p{font-size:14px;line-height:1.75;color:#91a1ad;margin:0}
 
 .ce-package{padding-top:30px}
 .ce-package.featured{border-color:rgba(53,173,242,.7);background:linear-gradient(160deg,#142636,#0e1923);box-shadow:0 18px 45px rgba(53,173,242,.12)}
-.ce-badge{position:absolute;top:-12px;left:26px;font:500 10px 'DM Mono',monospace;letter-spacing:.12em;text-transform:uppercase;background:var(--blue);color:#06101a;padding:5px 10px}
+.ce-badge{position:absolute;top:-12px;left:26px;font:800 11px Inter,sans-serif;letter-spacing:.06em;text-transform:uppercase;background:var(--blue);color:#06101a;padding:5px 10px}
 .ce-card p.ce-price{font-size:42px;font-weight:800;letter-spacing:-.04em;line-height:1.1;color:var(--white);margin:0 0 6px}
 .ce-card p.ce-blurb{color:#b4c3cf;margin-bottom:20px}
 .ce-package ul{list-style:none;padding:0;margin:0 0 26px;border-top:1px solid var(--line)}
@@ -33,7 +32,7 @@
 
 .ce-stat{display:flex;align-items:baseline;gap:12px;margin-top:18px!important}
 .ce-card p.ce-stat b{font-size:34px;letter-spacing:-.04em;color:var(--blue)}
-.ce-card p.ce-stat span{font:500 10px 'DM Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--blue-lite)}
+.ce-card p.ce-stat span{font:500 13px Inter,sans-serif;letter-spacing:0;color:#9aabb8}
 .ce-card .text-link{align-self:flex-start;margin-top:auto}
 .ce-card p+.text-link{margin-top:22px}
 
@@ -45,8 +44,9 @@
 .ce-faq-list details{border-bottom:1px solid var(--line)}
 .ce-faq-list summary{cursor:pointer;list-style:none;padding:20px 40px 20px 0;font-size:16px;font-weight:700;position:relative}
 .ce-faq-list summary::-webkit-details-marker{display:none}
-.ce-faq-list summary:after{content:'+';position:absolute;right:6px;top:50%;transform:translateY(-50%);font:500 20px 'DM Mono',monospace;color:var(--blue)}
-.ce-faq-list details[open] summary:after{content:'–'}
+.ce-faq-list summary:before,.ce-faq-list summary:after{content:'';position:absolute;right:6px;top:50%;width:14px;height:1.5px;margin-top:-.75px;background:var(--blue)}
+.ce-faq-list summary:after{transform:rotate(90deg);transition:transform 180ms ease-out}
+.ce-faq-list details[open] summary:after{transform:rotate(0deg)}
 .ce-faq-list p{margin:0 0 22px;color:#9aabb8;font-size:14px;line-height:1.75;max-width:680px}
 
 .ce-apply{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start}
@@ -87,4 +87,4 @@ a:focus-visible,summary:focus-visible,button:focus-visible{outline:2px solid var
   .ce-card p.ce-price{font-size:36px}
   .ce-apply form>button{justify-self:stretch}
 }
-@media(prefers-reduced-motion:reduce){.ce-card,.primary{transition:none}.primary:hover{transform:none}}
+@media(prefers-reduced-motion:reduce){.ce-faq-list summary:after{transition:none}.ce-card,.primary{transition:none}.primary:hover{transform:none}}

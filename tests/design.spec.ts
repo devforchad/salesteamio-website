@@ -12,7 +12,7 @@ test('self-hosted fonts, lightweight assets and valid structured data', async ({
   expect(await page.evaluate(() => document.fonts.check('1em Inter'))).toBe(true)
   expect(await page.evaluate(() => document.fonts.check('500 1em "DM Mono"'))).toBe(true)
   expect(await page.locator('body').evaluate(el => getComputedStyle(el).fontFamily)).toContain('Inter')
-  expect(await page.locator('.eyebrow').first().evaluate(el => getComputedStyle(el).fontFamily)).toContain('DM Mono')
+  expect(await page.locator('.process li>b').first().evaluate(el => getComputedStyle(el).fontFamily)).toContain('DM Mono')
   expect(await page.evaluate(() => JSON.parse(document.querySelector('script[type="application/ld+json"]')!.textContent!)['@context'])).toBe('https://schema.org')
   const resources = await page.evaluate(() => performance.getEntriesByType('resource').map(entry => ({ name: entry.name, transfer: (entry as PerformanceResourceTiming).transferSize })))
   expect(resources.reduce((sum, entry) => sum + entry.transfer, 0)).toBeLessThan(250_000)
