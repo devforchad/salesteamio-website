@@ -11,10 +11,13 @@ const N8N_ENDPOINT = 'https://n8n.salesteamio.com/webhook/website-contact'
 
 async function fillContact(page: import('@playwright/test').Page) {
   await page.goto('/#contact')
-  await page.locator('input[name="name"]').fill('Test Visitor')
-  await page.locator('input[name="email"]').fill('visitor@example.org')
-  await page.locator('textarea[name="message"]').fill('Our handoffs need attention.')
+  await page.locator('#contact input[name="name"]').fill('Test Visitor')
+  await page.locator('#contact input[name="email"]').fill('visitor@example.org')
+  await page.locator('#contact textarea[name="message"]').fill('Our handoffs need attention.')
 }
+
+const submitContact = (page: import('@playwright/test').Page) =>
+  page.locator('#contact').getByRole('button', { name: /Send to Chad|Sending/ })
 
 test('VITE_FORM_ENDPOINT overrides the baked-in default', async ({ page }) => {
   let overrideHits = 0
@@ -37,7 +40,7 @@ test('VITE_FORM_ENDPOINT overrides the baked-in default', async ({ page }) => {
   })
 
   await fillContact(page)
-  await page.getByRole('button', { name: 'Request a systems audit' }).click()
+  await submitContact(page).click()
 
   await expect(page.getByRole('heading', { name: 'Thanks for reaching out.' })).toBeVisible()
   expect(overrideHits).toBe(1)
@@ -55,14 +58,15 @@ test('a rejected submission keeps the form and offers a direct email', async ({ 
   }))
 
   await fillContact(page)
-  await page.getByRole('button', { name: 'Request a systems audit' }).click()
+  await submitContact(page).click()
 
-  await expect(page.getByRole('alert')).toContainText('wasn’t sent')
-  await expect(page.getByRole('alert').getByRole('link', { name: 'chad@salesteamio.com' }))
+  const alert = page.locator('#contact').getByRole('alert')
+  await expect(alert).toContainText('wasn’t sent')
+  await expect(alert.getByRole('link', { name: 'chad@salesteamio.com' }))
     .toHaveAttribute('href', 'mailto:chad@salesteamio.com')
   // Nothing the visitor typed is lost.
-  await expect(page.locator('input[name="name"]')).toHaveValue('Test Visitor')
-  await expect(page.getByRole('button', { name: 'Request a systems audit' })).toBeEnabled()
+  await expect(page.locator('#contact input[name="name"]')).toHaveValue('Test Visitor')
+  await expect(submitContact(page)).toBeEnabled()
 
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([])
 })

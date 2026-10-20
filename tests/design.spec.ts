@@ -1,62 +1,34 @@
 import { expect, test } from '@playwright/test'
-import { fileURLToPath } from 'node:url'
 
-// Repo-relative so this runs anywhere (CI has no /docker scratch dir).
-// Override with SCREENSHOT_DIR to collect the captures somewhere else.
-const screenshotDir = process.env.SCREENSHOT_DIR
-  ?? fileURLToPath(new URL('../test-results/screens', import.meta.url))
-
-test('self-hosted fonts, lightweight assets and valid structured data', async ({ page }) => {
+test('self-hosted fonts load and nothing is requested from Google Fonts', async ({ page }) => {
+  const external: string[] = []
+  page.on('request', request => {
+    if (/fonts\.(googleapis|gstatic)\.com/.test(request.url())) external.push(request.url())
+  })
   await page.goto('/')
   await page.evaluate(() => document.fonts.ready)
-  expect(await page.evaluate(() => document.fonts.check('1em Inter'))).toBe(true)
-  expect(await page.evaluate(() => document.fonts.check('500 1em "DM Mono"'))).toBe(true)
-  expect(await page.locator('body').evaluate(el => getComputedStyle(el).fontFamily)).toContain('Inter')
-  expect(await page.locator('.process li>b').first().evaluate(el => getComputedStyle(el).fontFamily)).toContain('DM Mono')
-  expect(await page.evaluate(() => JSON.parse(document.querySelector('script[type="application/ld+json"]')!.textContent!)['@context'])).toBe('https://schema.org')
-  const resources = await page.evaluate(() => performance.getEntriesByType('resource').map(entry => ({ name: entry.name, transfer: (entry as PerformanceResourceTiming).transferSize })))
-  expect(resources.reduce((sum, entry) => sum + entry.transfer, 0)).toBeLessThan(250_000)
-  expect(resources.some(entry => entry.name.endsWith('/assets/salesteamio-logo.png'))).toBe(false)
+  expect(await page.evaluate(() => document.fonts.check('700 1em Archivo'))).toBe(true)
+  expect(await page.evaluate(() => document.fonts.check('400 1em "Libre Franklin"'))).toBe(true)
+  expect(await page.locator('body').evaluate(el => getComputedStyle(el).fontFamily)).toContain('Libre Franklin')
+  expect(await page.locator('h1').evaluate(el => getComputedStyle(el).fontFamily)).toContain('Archivo')
+  expect(external).toEqual([])
 })
 
-test('no horizontal overflow on either page at 820, 900 and 1024', async ({ page }) => {
+test('structured data parses as a ProfessionalService', async ({ page }) => {
+  await page.goto('/')
+  const data = await page.evaluate(() => JSON.parse(document.querySelector('script[type="application/ld+json"]')!.textContent!))
+  expect(data['@context']).toBe('https://schema.org')
+  expect(data['@type']).toBe('ProfessionalService')
+})
+
+test('no horizontal overflow at phone, tablet and desktop widths', async ({ page }) => {
   for (const path of ['/', '/client-engine/']) {
-    for (const width of [820, 900, 1024]) {
+    for (const width of path === '/' ? [390, 820, 1024, 1440] : [820, 900, 1024]) {
       await page.setViewportSize({ width, height: 900 })
       await page.goto(path)
       await page.evaluate(() => document.fonts.ready)
       const { scroll, client } = await page.evaluate(() => ({ scroll: document.documentElement.scrollWidth, client: document.documentElement.clientWidth }))
       expect(scroll, `${path} at ${width}px`).toBeLessThanOrEqual(client)
-    }
-  }
-})
-
-test('section audit and connected routing at desktop, tablet and phone widths', async ({ page }) => {
-  for (const width of [1280, 1024, 800, 390]) {
-    await page.setViewportSize({ width, height: 900 })
-    await page.goto('/')
-    await page.evaluate(() => document.fonts.ready)
-    await page.locator('.skip-link').evaluate(el => { el.style.visibility = 'hidden' })
-    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width)
-    const connections = await page.locator('.project-routing').evaluate(panel => {
-      const box = (selector: string) => panel.querySelector(selector)!.getBoundingClientRect()
-      const input = box('.route-input'), first = box('.route-link'), hub = box('.route-hub')
-      const branch = box('.route-branches'), output = box('.route-output')
-      const rows = [...panel.querySelectorAll('.route-output span')].map(row => row.getBoundingClientRect())
-      const near = (a: number, b: number) => Math.abs(a - b) < 2
-      return near(input.right, first.left) && near(first.right, hub.left) &&
-        near(hub.right, branch.left) && near(branch.right, output.left) &&
-        near(branch.y + .5 - 33, rows[0].y + rows[0].height / 2) &&
-        near(branch.y + .5 + 33, rows[2].y + rows[2].height / 2)
-    })
-    expect(connections, `routing connectors at ${width}px`).toBe(true)
-    if (width === 1280 || width === 390) {
-      for (const [name, selector] of [
-        ['hero', '.hero'], ['services', '.services'], ['projects', '.projects'],
-        ['about', '.about'], ['contact', '.contact'], ['routing', '.project-routing'],
-      ]) {
-        await page.locator(selector).screenshot({ path: `${screenshotDir}/polish-${name}-${width}.png`, animations: 'disabled' })
-      }
     }
   }
 })

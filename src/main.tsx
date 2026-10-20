@@ -1,191 +1,351 @@
-import { FormEvent, useEffect, useRef, useState } from 'react'
+import { CSSProperties, FormEvent, useEffect, useRef, useState } from 'react'
 import { createRoot } from 'react-dom/client'
-import './styles.css'
-import { ArrowIcon } from './arrow'
+import './home.css'
 import { contactEmail, DEFAULT_FORM_ENDPOINT, sendContact } from './contact'
-
-type IconName = 'grid' | 'route' | 'bolt' | 'spark' | 'chart' | 'check'
-
-const services: { icon: IconName; title: string; text: string }[] = [
-  { icon: 'grid',title: 'CRM architecture', text: 'Fields, stages, views, ownership logic, data hygiene, and the practical administration that keeps a CRM useful.' },
-  { icon: 'route',title: 'Lead routing & handoffs', text: 'Assignment rules, queues, speed-to-lead, scheduling, and clean rep handoffs that prevent leads from drifting.' },
-  { icon: 'bolt',title: 'Automation & integrations', text: 'Reliable workflows across n8n, Zapier, APIs, webhooks, forms, Gmail, documents, and the tools your team already uses.' },
-  { icon: 'spark',title: 'AI enablement', text: 'AI-assisted qualification, re-engagement, agent workflows, and human-in-the-loop review designed around real operations.' },
-  { icon: 'chart',title: 'Revenue operations', text: 'Pipeline visibility, KPI reporting, reconciliation, commission workflows, and data leaders can make decisions from.' },
-  { icon: 'check',title: 'Documentation & adoption', text: 'SOPs, naming conventions, QA, user testing, training, and handoffs that make the system maintainable after launch.' },
-]
-
-const projects = [
-  ['AI lead re-engagement', 'A human-reviewed workflow to revive stalled conversations, qualify replies, route prospects, and support booking.'],
-  ['Business lending operations', 'Connected intake, CRM, documents, review, storage, submissions, and follow-up into one traceable operating flow.'],
-  ['Sales queue & assignment', 'Designed a multi-rep operating model with ownership rules, focused queues, appointment handoffs, and local-number SMS.'],
-  ['Attribution to calendar', 'Carried form responses and tracking context into enriched calendar events so sales teams start every call informed.'],
-]
-
-const systemStages = [
-  { label: 'INPUT', title: 'New lead', detail: 'Form · call · referral', icon: '01' },
-  { label: 'SYSTEM OF RECORD', title: 'CRM', detail: 'Identity · owner · history', icon: '02' },
-  { label: 'ORCHESTRATION', title: 'AI workflow', detail: 'Qualify · route · follow up', icon: '03' },
-  { label: 'HUMAN ACTION', title: 'Sales rep', detail: 'Full context · next step', icon: '04' },
-]
-
-function SystemVisual() {
-  return <div className="system-visual" role="img" aria-label="A connected sales system moves every new lead into the CRM, through an AI workflow, and to a sales rep with context">
-    <div className="visual-glow"></div>
-    <div className="visual-frame">
-      <div className="visual-header"><span><i></i> LIVE OPERATING FLOW</span><small>4 systems connected</small></div>
-      <ol className="system-flow">
-        {systemStages.map((stage, index) => <li key={stage.title}>
-          <div className="stage-index">{stage.icon}</div>
-          <div className="stage-copy"><small>{stage.label}</small><b>{stage.title}</b><span>{stage.detail}</span></div>
-          <span className="stage-status" aria-hidden="true">{index === systemStages.length - 1 ? 'READY' : 'SYNCED'}</span>
-          {index < systemStages.length - 1 && <span className="flow-link" aria-hidden="true"><i></i></span>}
-        </li>)}
-      </ol>
-      <div className="visual-footer"><span><i></i> No dropped handoffs</span><span>One traceable record</span></div>
-    </div>
-  </div>
-}
-
-function ProjectVisual({ index }: { index: number }) {
-  if (index === 0) return <div className="project-art project-reengagement" role="img" aria-label="A stalled lead is reviewed by AI, approved by a person, and returned to an active conversation">
-    <span className="art-number">RE-ENGAGEMENT LOOP</span>
-    <div className="mini-flow reengagement-flow">
-      <div><small>14d quiet</small><b>Stalled lead</b></div><i></i><div className="accent"><small>signal found</small><b>AI review</b></div><i></i><div><small>approved</small><b>Human check</b></div><i></i><div className="success"><small>reply</small><b>Conversation</b></div>
-    </div>
-  </div>
-
-  if (index === 1) return <div className="project-art project-lending" role="img" aria-label="A lending application moves through intake, CRM, documents, review, and submission with one tracked status">
-    <span className="art-number">TRACEABLE APPLICATION</span>
-    <div className="lending-track"><span>INTAKE</span><span>CRM</span><span>DOCS</span><span>REVIEW</span><span>SUBMIT</span></div>
-    <div className="lending-record"><span>APPLICATION #2048</span><b>Review package complete</b><small><i></i> 8 documents verified · owner assigned</small></div>
-  </div>
-
-  if (index === 2) return <div className="project-art project-routing" role="img" aria-label="New leads enter one assignment engine and are routed to the right sales queue and representative">
-    <span className="art-number">OWNERSHIP ENGINE</span>
-    <div className="route-input"><small>NEW LEADS</small><b>24</b><span>unassigned</span></div>
-    <span className="route-link" aria-hidden="true"></span>
-    <div className="route-hub"><small>RULES</small><b>Territory + capacity</b></div>
-    <span className="route-branches" aria-hidden="true"></span>
-    <div className="route-output"><span><i>A</i> East queue <b>8</b></span><span><i>B</i> West queue <b>9</b></span><span><i>C</i> Follow-up <b>7</b></span></div>
-  </div>
-
-  return <div className="project-art project-attribution" role="img" aria-label="Form and campaign attribution data are attached to the calendar event so the rep enters the call informed">
-    <span className="art-number">CONTEXT TO CALENDAR</span>
-    <div className="source-card"><small>FORM + UTM</small><b>Roof replacement</b><span>Google · Campaign 04</span></div>
-    <div className="transfer-line" aria-hidden="true"><i></i></div>
-    <div className="calendar-card"><header><span>SEP</span><b>24</b></header><div><small>DISCOVERY CALL</small><b>Jordan Miller</b><span>Need, source, answers attached</span></div></div>
-  </div>
-}
-
-function OperatorVisual() {
-  return <div className="about-mark" role="img" aria-label="One accountable operator owns discovery, architecture, implementation, quality assurance, and handoff">
-    <div className="operator-label"><span></span> HANDS-ON DELIVERY</div>
-    <div className="operator-core"><small>ONE ACCOUNTABLE</small><b>Operator</b><span>Discovery through handoff</span></div>
-    <ol className="operator-stages">
-      <li><b>01</b><span>Discovery</span><i>Mapped</i></li>
-      <li><b>02</b><span>Architecture</span><i>Designed</i></li>
-      <li><b>03</b><span>Implementation</span><i>Built</i></li>
-      <li><b>04</b><span>QA + handoff</span><i>Verified</i></li>
-    </ol>
-  </div>
-}
-
-function Icon({ name }: { name: IconName }) {
-  const paths: Record<IconName, string> = {
-    grid: 'M3 3h7v7H3V3Zm11 0h7v7h-7V3ZM3 14h7v7H3v-7Zm11 0h7v7h-7v-7Z',
-    route: 'M5 4v5c0 2 2 3 4 3h6c2 0 4 1 4 3v5M5 20v-5c0-2 2-3 4-3h6c2 0 4-1 4-3V4',
-    bolt: 'M13 2 4 14h7l-1 8 9-12h-7l1-8Z',
-    spark: 'm12 2 1.8 6.2L20 10l-6.2 1.8L12 18l-1.8-6.2L4 10l6.2-1.8L12 2Zm7 14 .7 2.3L22 19l-2.3.7L19 22l-.7-2.3L16 19l2.3-.7L19 16Z',
-    chart: 'M4 20V10m6 10V4m6 16v-7m6 7V7',
-    check: 'm5 12 4.2 4L19 6',
-  }
-  return <svg viewBox="0 0 24 24" aria-hidden="true"><path d={paths[name]} /></svg>
-}
 
 type FormStatus = 'idle' | 'submitting' | 'success' | 'error' | 'mailto'
 
-function App() {
-  const [menuOpen, setMenuOpen] = useState(false)
-  const [formStatus, setFormStatus] = useState<FormStatus>('idle')
+function useContactForm() {
+  const [status, setStatus] = useState<FormStatus>('idle')
   const submitting = useRef(false)
-  const menuButton = useRef<HTMLButtonElement>(null)
 
-  useEffect(() => {
-    if (!menuOpen) return
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key !== 'Escape') return
-      setMenuOpen(false)
-      menuButton.current?.focus()
-    }
-    document.addEventListener('keydown', onKey)
-    return () => document.removeEventListener('keydown', onKey)
-  }, [menuOpen])
-
-  function closeMenu() { setMenuOpen(false) }
-  async function submitForm(event: FormEvent<HTMLFormElement>) {
+  async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     const form = event.currentTarget
     if (!form.checkValidity()) { form.reportValidity(); return }
     if (submitting.current) return
     const data = new FormData(form)
-    if (data.get('website')) { setFormStatus('success'); return }
+    if (data.get('website')) { setStatus('success'); return }
     const endpoint = import.meta.env.VITE_FORM_ENDPOINT?.trim() || DEFAULT_FORM_ENDPOINT
     if (!endpoint) {
-      setFormStatus('mailto')
+      setStatus('mailto')
       const subject = encodeURIComponent(`Systems audit request — ${data.get('name')}`)
-      const body = encodeURIComponent(`Name: ${data.get('name')}\nCompany: ${data.get('company')}\nEmail: ${data.get('email')}\n\nWhat needs attention:\n${data.get('message')}`)
+      const body = encodeURIComponent(`Name: ${data.get('name')}\nCompany: ${data.get('company') ?? ''}\nEmail: ${data.get('email')}\n\nWhat needs attention:\n${data.get('message')}`)
       window.location.href = `mailto:${contactEmail}?subject=${subject}&body=${body}`
       return
     }
     submitting.current = true
-    setFormStatus('submitting')
+    setStatus('submitting')
     try {
       await sendContact({
         name: data.get('name'),
         email: data.get('email'),
-        company: data.get('company'),
+        company: data.get('company') ?? '',
         message: data.get('message'),
         website: data.get('website'),
       }, endpoint)
-      setFormStatus('success')
+      setStatus('success')
     } catch {
-      setFormStatus('error')
+      setStatus('error')
     } finally {
       submitting.current = false
     }
   }
 
+  return { status, submit }
+}
+
+function Confirmation() {
+  return <div className="form-confirmation" role="status"><h3>Thanks for reaching out.</h3><p>I’ll get back to you within one business day.</p></div>
+}
+
+function FormMessage({ status, className }: { status: FormStatus; className?: string }) {
+  const cls = className ? `form-status ${className}` : 'form-status'
+  if (status === 'error') return <p className={cls} role="alert">Your request wasn’t sent. Please try again, or email me directly at <a href={`mailto:${contactEmail}`}>{contactEmail}</a>.</p>
+  if (status === 'mailto') return <p className={cls} role="status">Opening your email app with this message ready to send. If nothing opened, email me directly at <a href={`mailto:${contactEmail}`}>{contactEmail}</a>.</p>
+  return null
+}
+
+function QuickForm() {
+  const { status, submit } = useContactForm()
+  if (status === 'success') return <div className="quick"><Confirmation /></div>
+  const sending = status === 'submitting'
+  return <form className="quick" aria-labelledby="quick-label" onSubmit={submit}>
+    <label id="quick-label" htmlFor="q-msg">What's breaking in your sales process?</label>
+    <textarea id="q-msg" name="message" rows={3} placeholder="Leads sit for an hour before anyone calls. Reps fight over who owns what. Stripe and the CRM never match." required></textarea>
+    <div className="quick-row">
+      <label className="sr" htmlFor="q-name">Your name</label>
+      <input id="q-name" name="name" autoComplete="name" placeholder="Your name" required />
+      <label className="sr" htmlFor="q-email">Your work email</label>
+      <input id="q-email" name="email" type="email" autoComplete="email" placeholder="you@company.com" required />
+    </div>
+    <div className="form-honeypot" aria-hidden="true"><label>Website<input name="website" tabIndex={-1} autoComplete="off" /></label></div>
+    <div className="quick-actions">
+      <button className="btn" type="submit" disabled={sending}>{sending ? 'Sending…' : 'Send to Chad'}</button>
+      <p className="fine">Goes straight to my inbox. I reply within one business day.</p>
+    </div>
+    <FormMessage status={status} />
+  </form>
+}
+
+function ContactForm() {
+  const { status, submit } = useContactForm()
+  if (status === 'success') return <Confirmation />
+  const sending = status === 'submitting'
+  return <form className="contact" onSubmit={submit}>
+    <div className="field"><label htmlFor="c-name">Name</label><input id="c-name" name="name" autoComplete="name" required /></div>
+    <div className="field"><label htmlFor="c-email">Work email</label><input id="c-email" name="email" type="email" autoComplete="email" required /></div>
+    <div className="field"><label htmlFor="c-company">Company <span>optional</span></label><input id="c-company" name="company" autoComplete="organization" /></div>
+    <div className="field field-wide"><label htmlFor="c-msg">What needs attention?</label><textarea id="c-msg" name="message" rows={5} required placeholder="Your tools, your team size, and what keeps going wrong."></textarea></div>
+    <div className="form-honeypot" aria-hidden="true"><label>Website<input name="website" tabIndex={-1} autoComplete="off" /></label></div>
+    <div className="field-wide submit-row"><button className="btn btn-light" type="submit" disabled={sending}>{sending ? 'Sending…' : 'Send to Chad'}</button></div>
+    <FormMessage status={status} className="field-wide" />
+  </form>
+}
+
+const tab = (n: number) => ({ '--tab': `var(--t${n})` }) as CSSProperties
+
+function App() {
+  // Scroll-spy for the divider tabs: the section in view pulls its tab out.
+  useEffect(() => {
+    const tabs = [...document.querySelectorAll<HTMLAnchorElement>('.tabs a')]
+    const byId = new Map(tabs.map(a => [a.getAttribute('href')!.slice(1), a]))
+    const setActive = (id: string) => tabs.forEach(a => {
+      const on = a === byId.get(id)
+      a.classList.toggle('is-active', on)
+      if (on) a.setAttribute('aria-current', 'location'); else a.removeAttribute('aria-current')
+    })
+    const io = new IntersectionObserver(entries => {
+      const hit = entries.filter(e => e.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0]
+      if (hit) setActive(hit.target.id)
+    }, { rootMargin: '-35% 0px -55% 0px', threshold: [0, .25, .5, 1] })
+    document.querySelectorAll('main > section').forEach(s => io.observe(s))
+    setActive('overview')
+    return () => io.disconnect()
+  }, [])
+
   return <>
-    <a className="skip-link" href="#main">Skip to content</a>
-    <header className="site-header">
-      <a className="brand" href="#top" aria-label="Sales Team IO home" onClick={closeMenu}><img src="/assets/logo-33.png" srcSet="/assets/logo-33.png 1x, /assets/logo-66.png 2x, /assets/logo-132.png 4x" width="33" height="33" alt="" /><span>SALES TEAM <b>IO</b></span></a>
-      <button ref={menuButton} className="menu-button" aria-label="Toggle navigation" aria-controls="primary-navigation" aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}><i></i><i></i></button>
-      <nav id="primary-navigation" className={menuOpen ? 'open' : ''} aria-label="Primary navigation">
-        <a href="#services" onClick={closeMenu}>Services</a><a href="#approach" onClick={closeMenu}>Approach</a><a href="#projects" onClick={closeMenu}>Work</a><a href="#about" onClick={closeMenu}>About</a>
-        <a href="/client-engine/">For creators</a>
-        <a className="nav-cta" href="#contact" onClick={closeMenu}>Request an audit <span><ArrowIcon dir="up-right" /></span></a>
-      </nav>
-    </header>
-    <main id="main">
-      <section className="hero" id="top">
-        <div className="hero-copy">
-          <h1>Build the system your <em>sales team</em> can actually run on.</h1>
-          <p className="hero-text">Sales Team IO connects your CRM, automations, AI agents, follow-up, documents, and reporting into one reliable operating system.</p>
-          <div className="actions"><a className="button primary" href="#contact">Book a systems audit <span><ArrowIcon dir="up-right" /></span></a><a className="button secondary" href="#services">See what we build <span><ArrowIcon dir="down" /></span></a></div>
-          <p className="microcopy"><span className="dot"></span> Built for sales-driven teams that are done with duct tape.</p>
-        </div>
-        <SystemVisual />
-      </section>
-      <section className="tech-band" aria-label="Technology experience"><p>Tools, platforms &amp; systems experience</p><div className="tech-list" tabIndex={0} aria-label="Scrollable technology list"><span>Close</span><span>n8n</span><span>Zapier</span><span>Google Workspace</span><span>Kixie</span><span>PandaDoc</span><span>Typeform</span><span>Calendly</span><span>Stripe</span><span>Airtable</span><span>OpenClaw</span><span>APIs / Webhooks</span></div></section>
-      <section className="section services" id="services"><div className="section-heading"><h2>Less busywork.<br/><em>More control.</em></h2><p>Every engagement is built around the points where leads, data, and people routinely lose momentum.</p></div><div className="service-grid">{services.map(service => <article className="service-card" key={service.title}><div className="card-top"><span className="icon"><Icon name={service.icon}/></span></div><h3>{service.title}</h3><p>{service.text}</p><a href="#contact" aria-label={`Discuss ${service.title}`}>Let’s discuss <span><ArrowIcon dir="up-right" /></span></a></article>)}</div></section>
-      <section className="section approach" id="approach"><div className="approach-intro"><h2>From a tangle of tools to a <em>working system.</em></h2><p>We start with the actual operation—not a generic template—then make the right work visible, repeatable, and easier to improve.</p></div><ol className="process" aria-label="Four connected delivery phases"><li><b>01<small>Discover</small></b><div><h3>Map the reality</h3><p>Find the handoffs, exceptions, and friction your team lives with every day.</p></div><span>Process map</span></li><li><b>02<small>Design</small></b><div><h3>Design the operating model</h3><p>Define the data, logic, ownership, and human checkpoints that make it reliable.</p></div><span>System blueprint</span></li><li><b>03<small>Implement</small></b><div><h3>Build &amp; test</h3><p>Implement the workflow, validate edge cases, and make the system understandable.</p></div><span>Verified workflow</span></li><li><b>04<small>Enable</small></b><div><h3>Hand off with confidence</h3><p>Document, train, QA, and give your team a system they can operate without guessing.</p></div><span>Operating playbook</span></li></ol></section>
-      <section className="outcomes"><div><h2>Make the next right action <em>obvious.</em></h2></div><ul><li><p>Leads are routed, owned, and followed up without relying on someone to remember.</p></li><li><p>Reps have the context they need, where they need it, when a conversation starts.</p></li><li><p>Leaders can see the pipeline and trust what the numbers are actually telling them.</p></li><li><p>Your team spends less time repairing processes and more time moving opportunities.</p></li></ul></section>
-      <section className="section projects" id="projects"><div className="section-heading"><h2>Built around the work<br/>that actually happens.</h2><p>Examples of operational problems solved across sales-driven teams. Details are intentionally kept public-safe.</p></div><div className="project-grid">{projects.map(([title, text], i) => <article className="project-card" key={title}><ProjectVisual index={i}/><div className="project-copy"><h3>{title}</h3><p className="project-text">{text}</p></div></article>)}</div></section>
-      <section className="section about" id="about"><OperatorVisual/><div className="about-copy"><h2>Built by someone who understands the <em>work behind the work.</em></h2><p>Sales Team IO is led by Chad Pitton, a revenue operations and automation consultant working hands-on from discovery through workflow mapping, implementation, testing, documentation, and user handoff.</p><p>His experience spans lending, home services, online education, and remote sales teams—where disconnected tools and unclear process quickly become expensive.</p><a className="text-link" href="https://linkedin.com/in/chadpitton" target="_blank" rel="noreferrer">Connect on LinkedIn <span><ArrowIcon dir="up-right" /></span></a></div></section>
-      <section className="contact" id="contact"><div className="contact-heading"><h2>Let’s make your sales operation <em>easier to run.</em></h2><p>Tell us what’s breaking down, getting missed, or taking too much manual effort. We’ll start with the system underneath it.</p></div><div className="contact-response" aria-live="polite" aria-atomic="true">{formStatus === 'success' ? <div className="form-confirmation"><h3>Thanks for reaching out.</h3><p>I’ll get back to you within one business day.</p></div> : <form onSubmit={submitForm}><label>Name<input name="name" required autoComplete="name" /></label><label>Work email<input name="email" type="email" required autoComplete="email" /></label><label>Company <span>(optional)</span><input name="company" autoComplete="organization" /></label><label>What needs attention?<textarea name="message" required rows={5} placeholder="A few lines about your sales process, tools, or bottleneck."></textarea></label><div className="form-honeypot" aria-hidden="true"><label>Website<input name="website" tabIndex={-1} autoComplete="off" /></label></div><button className="button primary" type="submit" disabled={formStatus === 'submitting'}>{formStatus === 'submitting' ? 'Sending your request…' : 'Request a systems audit'} <span aria-hidden="true"><ArrowIcon dir="up-right" /></span></button>{formStatus === 'error' && <p className="form-status" role="alert">Your request wasn’t sent. Please try again, or email me directly at <a href={`mailto:${contactEmail}`}>{contactEmail}</a>.</p>}{formStatus === 'mailto' && <p className="form-status" role="status">Opening your email app with this message ready to send. If nothing opened, email me directly at <a href={`mailto:${contactEmail}`}>{contactEmail}</a>.</p>}</form>}</div></section>
-    </main>
-    <footer><a className="brand" href="#top" aria-label="Back to top"><img src="/assets/logo-33.png" srcSet="/assets/logo-33.png 1x, /assets/logo-66.png 2x, /assets/logo-132.png 4x" width="33" height="33" alt="" /><span>SALES TEAM <b>IO</b></span></a><p>CRM · Automation · AI Enablement · Revenue Operations</p><div><a href="https://linkedin.com/in/chadpitton" target="_blank" rel="noreferrer">LinkedIn</a><a href={`mailto:${contactEmail}`}>Email</a><a href="/client-engine/">Client Engine</a></div><small>© {new Date().getFullYear()} Sales Team.io LLC. All rights reserved.</small></footer>
+    <a className="skip" href="#overview">Skip to content</a>
+
+    <div className="desk">
+      <div className="sheet">
+
+        <header className="masthead">
+          <a className="brand" href="#overview" aria-label="Sales Team IO, back to top">
+            <svg className="mark" viewBox="0 0 512 512" aria-hidden="true"><g transform="translate(256 256)"><g stroke="currentColor" strokeWidth="20" strokeLinecap="round" fill="none"><path d="M-52 -52 L-140 -140" /><path d="M52 -52 L140 -140" /><path d="M-52 52 L-140 140" /><path d="M52 52 L140 140" /></g><g fill="currentColor"><circle cx="-140" cy="-140" r="37.6" /><circle cx="140" cy="-140" r="37.6" /><circle cx="-140" cy="140" r="37.6" /><circle cx="140" cy="140" r="37.6" /></g><path fill="currentColor" d="M-58 -58 Q0 -24.6 58 -58 Q24.6 0 58 58 Q0 24.6 -58 58 Q-24.6 0 -58 -58 Z" /><g fill="#2f9be0"><circle cx="0" cy="-140" r="35" /><circle cx="0" cy="140" r="35" /><circle cx="-140" cy="0" r="35" /><circle cx="140" cy="0" r="35" /></g></g></svg>
+            <span>Sales Team IO</span>
+          </a>
+          <p className="masthead-meta">CRM, lead routing and sales automation <span>· Chad Pitton</span></p>
+          <nav className="masthead-links" id="primary-navigation" aria-label="Utility">
+            <a href="/client-engine/">For creators</a>
+            <a className="btn btn-small" href="#contact">Start a project</a>
+          </nav>
+        </header>
+
+        {/* Divider tabs: the binder's own navigation. Sticky; the active tab pulls out. */}
+        <nav className="tabs" aria-label="Sections">
+          <a href="#overview" style={tab(1)}><b>1</b><span>Overview</span></a>
+          <a href="#services" style={tab(2)}><b>2</b><span>Services</span></a>
+          <a href="#work" style={tab(3)}><b>3</b><span>Work</span></a>
+          <a href="#method" style={tab(4)}><b>4</b><span>Method</span></a>
+          <a href="#about" style={tab(5)}><b>5</b><span>About</span></a>
+          <a href="#contact" style={tab(6)} className="tab-ink"><b>6</b><span>Contact</span></a>
+        </nav>
+
+        <main>
+
+          {/* 1 · OVERVIEW (cover page) */}
+          <section className="cover" id="overview" style={tab(1)} aria-labelledby="cover-title">
+            <div className="cover-main">
+              <h1 id="cover-title">New leads answered in under a minute, routed to the right rep, and logged in your CRM.</h1>
+              <p className="lede">I'm Chad Pitton. I design, build and run the CRM, lead routing, follow-up automation and AI texting behind sales teams of up to 50 reps.</p>
+
+              <QuickForm />
+            </div>
+
+            <aside className="proof" aria-labelledby="proof-title">
+              <h2 id="proof-title">The first five minutes decide the lead</h2>
+              <p className="proof-sub">Before and after a routing build</p>
+
+              <div className="measure">
+                <h3>Time to first response</h3>
+                <div className="scale" role="img" aria-label="Before: 5 to 10 minutes. After: under 60 seconds.">
+                  <div className="track">
+                    <span className="band band-before" style={{ '--from': '50%', '--to': '100%' } as CSSProperties}></span>
+                    <span className="band band-after" style={{ '--from': '0%', '--to': '9%' } as CSSProperties}></span>
+                  </div>
+                  <div className="ticks" aria-hidden="true"><span style={{ '--at': '0%' } as CSSProperties}>0</span><span style={{ '--at': '10%' } as CSSProperties}>1</span><span style={{ '--at': '50%' } as CSSProperties}>5</span><span style={{ '--at': '100%' } as CSSProperties}>10 min</span></div>
+                </div>
+                <dl className="pair">
+                  <div><dt>Before</dt><dd>5–10 min</dd></div>
+                  <div className="after"><dt>After</dt><dd>Under 60 sec</dd></div>
+                </dl>
+                <p className="why">Between minute 5 and minute 10, the odds of reaching a lead fall fivefold.<sup><a href="#fn1" id="fn1-ref" aria-label="Footnote 1">1</a></sup></p>
+              </div>
+
+              <div className="measure">
+                <h3>Manual lead assignment</h3>
+                <div className="bars" role="img" aria-label="Before: about 50 hours a month. After: none, rules assign every lead.">
+                  <span className="bar bar-before" style={{ '--w': '100%' } as CSSProperties}></span>
+                  <span className="bar bar-after" style={{ '--w': '1.5%' } as CSSProperties}></span>
+                </div>
+                <dl className="pair">
+                  <div><dt>Before</dt><dd>~50 hrs a month<sup><a href="#fn2" id="fn2-ref" aria-label="Footnote 2">2</a></sup></dd></div>
+                  <div className="after"><dt>After</dt><dd>None<small>Rules assign every lead</small></dd></div>
+                </dl>
+              </div>
+
+              <ol className="notes">
+                <li id="fn1">MIT / InsideSales.com <a href="https://25649.fs1.hubspotusercontent-na2.net/hub/25649/file-13535879-pdf/docs/mit_study.pdf">Lead Response Management Study</a> (2007), 15,000+ leads. <a href="#fn1-ref" aria-label="Back to text">↩</a></li>
+                <li id="fn2">Estimate: about 2,000 leads a month at roughly 1.5 minutes of manual triage each. <a href="#fn2-ref" aria-label="Back to text">↩</a></li>
+              </ol>
+            </aside>
+
+            <p className="clients"><span>Current and recent work:</span> I run the sales systems for <strong>Supple Warriors</strong> and produced product video ads for <strong>Crafted Coffee Supply</strong>. Other clients are in business lending, home services, e-commerce and med spas.</p>
+          </section>
+
+          {/* 2 · SERVICES */}
+          <section className="chapter" id="services" style={tab(2)} aria-labelledby="services-title">
+            <header className="divider">
+              <h2 id="services-title"><span className="num">2</span> Scope of work</h2>
+              <p>The six kinds of work I take on. Most projects combine two or three.</p>
+            </header>
+            <table className="scope">
+              <thead><tr><th scope="col">Area</th><th scope="col">What I do</th><th scope="col">Usually built in</th></tr></thead>
+              <tbody>
+                <tr><th scope="row"><span className="clause">2.1</span>CRM setup and cleanup</th><td>Pipelines, stages, fields and ownership rules that match how you sell. Views reps actually open. Duplicates merged, dead fields removed.</td><td>Close, Airtable, Google Sheets</td></tr>
+                <tr><th scope="row"><span className="clause">2.2</span>Lead routing and handoffs</th><td>Assignment by territory, capacity or rotation. Speed-to-lead alerts. Booked calls land with the right rep and the full history attached.</td><td>Close, Kixie, Calendly, n8n</td></tr>
+                <tr><th scope="row"><span className="clause">2.3</span>Automation and integrations</th><td>The connections between your forms, CRM, calendar, payments, contracts and email, logged so a failure shows up instead of silently dropping a lead.</td><td>n8n, Zapier, webhooks, Stripe, PandaDoc, Typeform</td></tr>
+                <tr><th scope="row"><span className="clause">2.4</span>AI texting and re-engagement</th><td>AI SMS setters that work new inquiries and old leads, with clear rules for when a person takes over.</td><td>n8n, Close, registered SMS</td></tr>
+                <tr><th scope="row"><span className="clause">2.5</span>Sales reporting and attribution</th><td>Every payment tied back to the closer and setter. Leaderboards and pipeline numbers that reconcile with Stripe.</td><td>Stripe, Close, Google Sheets</td></tr>
+                <tr><th scope="row"><span className="clause">2.6</span>Documentation and training</th><td>SOPs, naming conventions, training sessions and a written handoff, so your team can run the system without me.</td><td>Google Workspace</td></tr>
+              </tbody>
+            </table>
+          </section>
+
+          {/* 3 · WORK */}
+          <section className="chapter" id="work" style={tab(3)} aria-labelledby="work-title">
+            <header className="divider">
+              <h2 id="work-title"><span className="num">3</span> Case files</h2>
+              <p>Two clients by name. The rest are described by industry, at their request.</p>
+            </header>
+
+            <article className="case case-lead" aria-labelledby="c1">
+              <div className="case-head">
+                <span className="clause">3.1</span>
+                <h3 id="c1">Supple Warriors</h3>
+                <p className="case-meta">Fitness and mobility coaching · setters and closers · Close, Stripe, Google Sheets, n8n</p>
+              </div>
+              <div className="case-body">
+                <p className="case-summary">I run their sales systems.</p>
+                <ul>
+                  <li>A daily sync matches every Stripe payment to the closer and setter recorded in Close. When it can't find a match it flags the row instead of guessing.</li>
+                  <li>A sales leaderboard that only counts deals with a verified Stripe payment behind them.</li>
+                  <li>An AI SMS setter that re-engages past leads and hands warm replies to a person.</li>
+                </ul>
+                <a className="link" href="https://demo.salesteamio.com/supple-warriors-sms-agent">Try the AI setter demo</a>
+              </div>
+            </article>
+
+            <div className="case-grid">
+              <article className="case" aria-labelledby="c2">
+                <div className="case-head">
+                  <span className="clause">3.2</span>
+                  <h3 id="c2">Intake to lender submission</h3>
+                  <p className="case-meta">Business lending</p>
+                </div>
+                <p>Connected the intake form, CRM, document collection, review, storage and lender submission into one flow, with follow-up at each stage and one status anyone can check.</p>
+              </article>
+              <article className="case" aria-labelledby="c3">
+                <div className="case-head">
+                  <span className="clause">3.3</span>
+                  <h3 id="c3">Queues and ownership for a sales floor</h3>
+                  <p className="case-meta">Multi-rep sales team</p>
+                </div>
+                <p>Ownership rules, focused rep queues, appointment handoffs and local-number texting, so every lead has exactly one owner and a next step.</p>
+              </article>
+              <article className="case" aria-labelledby="c4">
+                <div className="case-head">
+                  <span className="clause">3.4</span>
+                  <h3 id="c4">Context on the calendar invite</h3>
+                  <p className="case-meta">Appointment-setting team</p>
+                </div>
+                <p>Form answers and ad source carried into the calendar event, so the rep knows the job and the campaign before the call starts.</p>
+              </article>
+              <article className="case" aria-labelledby="c5">
+                <div className="case-head">
+                  <span className="clause">3.5</span>
+                  <h3 id="c5">Crafted Coffee Supply</h3>
+                  <p className="case-meta">Espresso accessories</p>
+                </div>
+                <p>Produced AI product video ads for their handmade portafilter handles, cut for vertical and landscape placements.</p>
+              </article>
+            </div>
+          </section>
+
+          {/* 4 · METHOD */}
+          <section className="chapter" id="method" style={tab(4)} aria-labelledby="method-title">
+            <header className="divider">
+              <h2 id="method-title"><span className="num">4</span> How a project runs</h2>
+              <p>Four stages. Each one ends with something you keep.</p>
+            </header>
+            <div className="method">
+              <ol className="steps">
+                <li><span className="clause">4.1</span><div><h3>Map what actually happens</h3><p>I talk to the people doing the work and trace real leads through your tools, exceptions included.</p></div><p className="keep"><span>You keep</span>Process map</p></li>
+                <li><span className="clause">4.2</span><div><h3>Design the rules</h3><p>Data, ownership, timing, and the points where a person has to sign off.</p></div><p className="keep"><span>You keep</span>System blueprint</p></li>
+                <li><span className="clause">4.3</span><div><h3>Build and test</h3><p>Built in your accounts and tested against the edge cases from the map before anyone relies on it.</p></div><p className="keep"><span>You keep</span>Tested workflow</p></li>
+                <li><span className="clause">4.4</span><div><h3>Hand it over</h3><p>SOPs, training and a written playbook your team can run without calling me.</p></div><p className="keep"><span>You keep</span>Operating playbook</p></li>
+              </ol>
+
+              <figure className="excerpt" aria-labelledby="ex-cap">
+                <figcaption id="ex-cap">What a playbook page looks like <em>(illustrative sample, not a client document)</em></figcaption>
+                <div className="sop">
+                  <div className="sop-head"><b>SOP 2.3</b><span>New inbound lead</span><span className="rev">Rev. 3 · Owner: Sales manager</span></div>
+                  <table>
+                    <thead><tr><th scope="col">Step</th><th scope="col">What happens</th><th scope="col">Within</th></tr></thead>
+                    <tbody>
+                      <tr><td>1</td><td>Form submitted; lead created in Close with source and answers</td><td>Seconds</td></tr>
+                      <tr><td>2</td><td>Owner assigned by territory and current load</td><td>Seconds</td></tr>
+                      <tr><td>3</td><td>First text sent from the owner's local number</td><td>60 sec</td></tr>
+                      <tr><td>4</td><td>No reply: call task created for the owner</td><td>15 min</td></tr>
+                      <tr><td>5</td><td>Still no contact: lead moves to the nurture sequence</td><td>3 days</td></tr>
+                    </tbody>
+                  </table>
+                  <p className="sop-exception"><b>Exception</b> Existing customer detected: skip assignment, alert their current rep.</p>
+                </div>
+              </figure>
+            </div>
+          </section>
+
+          {/* 5 · ABOUT */}
+          <section className="chapter" id="about" style={tab(5)} aria-labelledby="about-title">
+            <header className="divider">
+              <h2 id="about-title"><span className="num">5</span> Who you'd work with</h2>
+            </header>
+            <div className="about">
+              <div className="about-text">
+                <p className="about-lead">Sales Team IO is me, Chad Pitton. I do the discovery, the mapping, the build, the testing and the handoff myself.</p>
+                <p>I've worked inside lending, home services, coaching, e-commerce and med spa sales teams, where a lead that sits for ten minutes is a lead someone else calls first. That's the problem I like: the gap between a form being filled out and a rep picking up the phone, and everything that has to be true in the CRM for that to go right.</p>
+                <p>Before I build anything I want to see how your team works today. Usually the fix is smaller than the tool everyone's arguing about.</p>
+              </div>
+              <div className="signature">
+                <p className="sig-name">Chad Pitton</p>
+                <p>Sales Team.io LLC</p>
+                <p>Based in Florida, US Eastern time</p>
+                <p><a className="link" href="mailto:chad@salesteamio.com">chad@salesteamio.com</a></p>
+                <p><a className="link" href="https://linkedin.com/in/chadpitton">LinkedIn</a></p>
+              </div>
+            </div>
+          </section>
+
+          {/* 6 · CONTACT */}
+          <section className="chapter chapter-ink" id="contact" style={tab(6)} aria-labelledby="contact-title">
+            <header className="divider">
+              <h2 id="contact-title"><span className="num">6</span> Tell me what's breaking</h2>
+              <p>A few lines is enough. It goes straight to chad@salesteamio.com and I reply within one business day.</p>
+            </header>
+            <ContactForm />
+          </section>
+        </main>
+
+        <footer className="colophon">
+          <p>Sales Team.io LLC</p>
+          <p><a href="mailto:chad@salesteamio.com">chad@salesteamio.com</a> · <a href="https://linkedin.com/in/chadpitton">LinkedIn</a> · <a href="/client-engine/">Client Engine</a></p>
+          <p className="rev">Rev. October 2026</p>
+        </footer>
+
+      </div>
+    </div>
   </>
 }
 
